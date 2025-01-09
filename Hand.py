@@ -60,11 +60,10 @@ class Hand:
         
         # Vérifier que les autres doigts sont repliés
         other_fingers = all([
-            self.thumb[0][1] > self.thumb[2][1],  # Le pouce est replié
-            self.index[0][1] > self.index[2][1],  # L'index est déplié
-            self.middle[0][1] < self.middle[2][1],  # Le majeur est replié
-            self.ring[0][1] < self.ring[2][1],  # L'annulaire est replié
-            self.little[0][1] < self.little[2][1]  # L'auriculaire est replié
+            (self.index[0][1] > self.index[3][1]) or (not(self.index[0][1] > self.index[3][1]) and distance.euclidean(self.index[0], self.index[3]) > self.scale),  # L'index est déplié
+            self.middle[0][1] < self.middle[3][1],  # Le majeur est replié
+            self.ring[0][1] < self.ring[3][1],  # L'annulaire est replié
+            self.little[0][1] < self.little[3][1]  # L'auriculaire est replié
         ])
         return index_raised and other_fingers
     
@@ -92,16 +91,9 @@ class Hand:
     
     def isOkSign(self):
         # Un geste "OK" signifie que le pouce et l'index se touchent, et les autres doigts sont pliés
-        ok_sign = ([self.thumb[1][1] < self.thumb[0][1],
-                self.index[1][1] < self.index[0][1] ,
-                distance.euclidean(self.thumb[3], self.index[3]) < self.scale/2,  # Pouce et index proches
-                self.middle[2][1] < self.middle[0][1],
-                self.ring[2][1] < self.ring[0][1],
-                self.little[2][1] < self.little[0][1]])
+        ok_sign = all([
+                distance.euclidean(self.thumb[3], self.index[3]) < self.scale,  # Pouce et index proches 18 < 30/2
+                self.middle[3][1] < self.middle[0][1],
+                self.ring[3][1] < self.ring[0][1],
+                self.little[3][1] < self.little[0][1]])
         return ok_sign
-
-
-
-
-
-
