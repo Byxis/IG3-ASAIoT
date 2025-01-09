@@ -1,47 +1,96 @@
-import cv2
 import numpy as np
-
-HEIGHT, WIDTH = 500, 500  
-RADIUS = 50  
-PERIOD = 30
-waste_img = cv2.imread('img.png')
-def update_pos(x, y, x_step, y_step):
-    if x + RADIUS + x_step < WIDTH:
-        x += x_step
-    if y + RADIUS + y_step < HEIGHT:
-        y += y_step
-
-    return x, y, x_step, y_step
-
-canevas = np.ones((HEIGHT, WIDTH, 3), dtype=np.uint8) * 255
-center_x, center_y = 312, 82 
-x_step, y_step = 0, 10
-rows,cols,channels = waste_img.shape
-waste_img = cv2.resize(waste_img, (RADIUS*2, RADIUS*2))
-
-
+from Graphics import Graphic, SceneRender
 import cv2
-camera = cv2.VideoCapture(0)
-if(not(camera.isOpened())):
-    print("Impossible d'ouvrir la webcam.")
-    exit()
-
-while(True):
-    # Capture frame-by-frame
-    ret, frame = camera.read()
-    frame = cv2.flip(frame, 1)
-    if(not(ret)):
-        print("Impossible de recevoir une nouvelle frame. Quitte...")
-        break
-    if (center_x + RADIUS) <= WIDTH- 10 and (center_y + RADIUS) <= HEIGHT - 10:
-        frame[center_y:center_y+RADIUS*2, center_x:center_x+RADIUS*2] = waste_img
-        center_x, center_y, x_step, y_step = update_pos(center_x, center_y, x_step, y_step)
-
-    cv2.imshow('frame', frame)
-    if(cv2.waitKey(1) == ord('q')):
-        break
-# When everything done, release the capture
-camera.release()
+from Waste import Waste
+from ComposedWaste import ComposedWaste
+from WasteType import WasteType
+from FPSCounter import FPSCounter
 
 
-cv2.destroyAllWindows()
+def wasteSpawn(wasteList, name, type, speed, pos, sprite_path):
+    wasteList.append(Waste(name, type, speed, pos, sprite_path))
+
+def compWasteSpawn(wasteList, name, component, speed, pos, sprite_path):
+    wasteList.append(ComposedWaste(name, component, pos, speed, sprite_path))
+
+def updateAllWaste(render, wasteList, HEIGHT, EPSILON):
+    for w in wasteList:
+            w.update(EPSILON)
+            if w.position[1] < HEIGHT - w.radius:
+                render.add_layer(w.get_graphic, (w.position[0], w.position[1]))
+            if (w.position[1] < HEIGHT - w.radius - 300) and type(w) == ComposedWaste:
+                w.slice
+    return render
+
+def main():
+    EPSILON = 1
+    WIDTH, HEIGHT = 800, 600
+
+    wasteList = []
+    wasteSpawn(wasteList, "dechet i", 'Recyclable',[0, 4], [250, 100], "output.png")
+    wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,3], [400, 100], "output.png")
+    wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,2], [550, 100], "output.png")
+    wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,1], [700, 100], "output.png")
+
+    waste1 = Waste("dechet", 'Recyclable',[0 ,1], [700, 100], "output.png")
+    compWaste1 = ComposedWaste("dechetcomp", [waste1, waste1], [100, 100], [0, 1], "output2.png")
+    compWaste2 = ComposedWaste("dechetcomp2", [waste1, compWaste1], [100, 200], [0, 1], "output2.png")
+    compWasteSpawn(wasteList, "dechetcomp", [waste1, waste1], [100, 100], [0, 1], "output2.png")
+    compWasteSpawn(wasteList, "dechetcomp2", [waste1, compWaste1], [100, 200], [0, 1], "output2.png")
+    # Utilisation de la webcam
+    cap = cv2.VideoCapture(0)
+
+    # Instancie le "moteur de rendu"
+    render = SceneRender((WIDTH, HEIGHT))
+    fps = FPSCounter()
+
+
+    while cap.isOpened():
+        ret, img = cap.read()
+        if not ret:
+            break
+        # On transforme "img" en un élément graphique manipulable
+        webcam = Graphic(img)
+        webcam.resize((WIDTH, HEIGHT))
+        # webcam.fill((0, 0, 0)) 
+            
+        
+        """
+        mask = np.zeros((HEIGHT, WIDTH))
+        for i in range(HEIGHT):
+            for j in range(WIDTH):
+                mask[i, j] = abs(10 - (i + j) % 20) / 10.0 if 50 < i < 100 else 0
+        """
+
+        render.clear()
+        # On place en fond le caneva
+        render.add_layer(webcam)
+        render = updateAllWaste(render, wasteList, HEIGHT, EPSILON)
+
+        output = render.get_image()
+        
+        fps.update()
+        ouput = fps.display(output)
+        cv2.imshow("Resultat", output)
+
+        key = cv2.waitKey(EPSILON) & 0xFF
+        if key == ord("q") or key == 27:
+            break
+
+
+        if key != 0xFF:
+            if key == ord("1"):
+                print("La touche '1' est appuyée")
+                # Faire des actions
+            if key == ord("2"):
+                print("La touche '2' est appuyée")
+                # Faire des actions
+
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    main()
+
+
+

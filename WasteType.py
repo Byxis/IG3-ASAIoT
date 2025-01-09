@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Season(Enum):
+class WasteType(Enum):
     Recyclable = 'Recyclable'
     Biodegradable = 'Biodegradable'
     Nuclear = 'Nuclear'
