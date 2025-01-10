@@ -81,10 +81,10 @@ def main():
     #wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,2], [550, 100], "output.png", WIDTH)
     #wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,1], [700, 100], "output.png", WIDTH)
 
-    waste1 = Waste("dechet", 'Recyclable',[0 ,1], [700, 100], "output.png")
-    compWaste1 = ComposedWaste("dechetcomp", [waste1, waste1, waste1], [0, 1], [100, 100], "output2.png")
-    compWaste2 = ComposedWaste("dechetcomp2", [waste1, compWaste1], [0, 1], [100, 200], "output2.png")
-    compWasteSpawn(wasteList, "dechetcomp", [waste1, waste1, waste1, waste1, waste1, waste1, waste1], [0, 2], [600, 100], "output2.png")
+    waste1 = Waste("dechet", 'Recyclable',[0 ,1], [700, 100], "Textures/Waste/output.png")
+    compWaste1 = ComposedWaste("dechetcomp", [waste1, waste1, waste1], [0, 1], [100, 100], "Textures/Waste/output2.png")
+    compWaste2 = ComposedWaste("dechetcomp2", [waste1, compWaste1], [0, 1], [100, 200], "Textures/Waste/output2.png")
+    compWasteSpawn(wasteList, "dechetcomp", [waste1, waste1, waste1, waste1, waste1, waste1, waste1], [0, 2], [600, 100], "Textures/Waste/output2.png")
     #compWasteSpawn(wasteList, "dechetcomp2", [waste1, compWaste1], [0, 1], [100, 200], "output2.png")
     # Utilisation de la webcam
     cap = cv2.VideoCapture(0)
