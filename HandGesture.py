@@ -5,4 +5,5 @@ class HandGesture(Enum):
     FIST_CLOSED = 2
     HAND_OPEN = 3
     OK_SIGN = 4
-    NONE = 5
+    ROCK_N_ROLL = 5
+    NONE = 6
