@@ -5,7 +5,7 @@ from Button import Button
 from GameState import GameState
 
 class Menu:
-    def __init__(self, name: str, buttons: list, WIDTH=800,HEIGHT=600):
+    def __init__(self, name: str, buttons: list, WIDTH=400,HEIGHT=300):
         self.name = name
         self.buttons = buttons
         self.WIDTH = WIDTH
@@ -20,35 +20,43 @@ class Menu:
         return self.caneva.get_image()
 
 def create_Menu_Main():
-    Play = Button("Play", 10, 100, 260, 200, button_play)
-    Quit = Button("Exit", 10, 400, 260, 500, button_quit)
+    Play = Button("Play", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
+    Quit = Button("Exit", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_quit)
     buttons = [Play, Quit]
     Main = Menu("Main", buttons)
     Main.draw_menu()
     return Main
 
 def create_Menu_Pause():
-    Resume = Button("Resume", 500, 50, 700, 150, button_play)
-    Quit = Button("Quit", 500, 450, 700, 550, button_main)
+    Resume = Button("Resume", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
+    Quit = Button("Quit", round(6.9*WIDTH/8), round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_main)
     buttons = [Resume, Quit]
     Pause = Menu("Pause", buttons)
     Pause.draw_menu()
     return Pause
 
 def create_Menu_Play():
-    Pause = Button("Pause", 0, 0, 100, 100, button_pause)
+    Pause = Button("Pause", 10, 10, round(WIDTH/8), round(HEIGHT/6), button_pause)
     buttons = [Pause]
     Play = Menu("Play", buttons)
     Play.draw_menu()
     return Play
 
 def create_Menu_End():
-    Restart = Button("Restart", 10, 100, 260, 200, button_play)
-    Main = Button("Main", 10, 400, 260, 500, button_main)
+    Restart = Button("Restart", 10, round(HEIGHT/6), round(2.6*WIDTH/8), round(HEIGHT/3), button_play)
+    Main = Button("Main", 10, round(4*HEIGHT/6), round(2.6*WIDTH/8), round(5*HEIGHT/6), button_main)
     buttons = [Restart, Main]
     End = Menu("End", buttons)
     End.draw_menu()
     return End
+
+def create_Menu_Leaderboard():
+    caneva = Graphic((WIDTH, HEIGHT))
+    #caneva.draw_rectangle((x1, y1), (x2, y2), (200, 200, 200), 3)
+    #caneva.draw_text(name, (((x1+x2)/2-(len(name))), ((y1+y2)/2-(len(name)))), 'Hollster.ttf', 30   , (200, 200, 200), 3, center = True)
+  
+    #return Leaderboard
+    pass
 
 def create_Menu_All():
     Main = create_Menu_Main()
@@ -88,7 +96,7 @@ def mouse_callback(event, x, y, flags, param):
     if event == cv2.EVENT_MOUSEMOVE:
         mouse_x, mouse_y = x, y
 
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 400, 300
 
 caneva = Graphic((WIDTH, HEIGHT))
 render = SceneRender((WIDTH, HEIGHT))

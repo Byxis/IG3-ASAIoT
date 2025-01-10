@@ -3,12 +3,14 @@ from Graphics import Graphic, SceneRender
 
 
 class Button:
-    def __init__(self, name: str, x1, y1, x2, y2, action=None):
+    def __init__(self, name: str, x1, y1, width, height, action=None):
         self.name = name
         self.x1 = x1
         self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+        self.width = width  
+        self.height = height
+        self.x2 = x1 + width
+        self.y2 = y1 + height
         self.action = action
 
     def isClicked(self, pos_x=-1, pos_y=-1):

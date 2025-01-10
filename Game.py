@@ -8,13 +8,14 @@ from HandGesture import HandGesture
 from scipy.spatial import distance
 from Graphics import Graphic, SceneRender
 from Bin import Bin
+from Menus import *
 
 class Game:
     def __init__(self, player):
         self.player = player
         self.activeWasteList = []
         self.binList = []
-        self.gameState = GameState.Playing
+        self.gameState = GameState.MainMenu
         self.indexPos = []
         self.player = [[0,0], [0,0]]
     
@@ -22,6 +23,7 @@ class Game:
         #Initialisation
         EPSILON = 1
         WIDTH, HEIGHT = 400, 300
+        Main, Pause, Play, End = create_Menu_All()
 
         cap = cv2.VideoCapture(0)
         fps = FPSCounter()
@@ -36,15 +38,60 @@ class Game:
             ret, img = cap.read()
             if not ret:
                 break
-
             img = cv2.flip(img, 1)
-
+            
             webcam = Graphic(img)
             webcam.resize((WIDTH, HEIGHT))
             output = render.get_image()
+            render.add_layer(webcam)
 
-            if self.gameState == GameState.Playing:
-                self.treatPicture(hands, output)
+            self.treatPicture(hands, output)
+
+            render.clear()
+            if self.gameState == GameState.PauseMenu:
+                render.add_layer(img)            
+                render.add_layer(Pause.show_menu())
+                
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[0][2] == 1.0):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                    for bu in Pause.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            bu.click()
+
+            elif self.gameState == GameState.Playing:
+                render.add_layer(img)            
+                render.add_layer(Play.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[0][2] == 1.0):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                    for bu in Play.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            bu.click()
+
+            elif self.gameState == GameState.EndMenu:
+                render.add_layer(img)            
+                render.add_layer(End.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[0][2] == 1.0):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                    for bu in End.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            bu.click()
+
+            elif self.gameState == GameState.MainMenu:
+                render.add_layer(img)
+                render.add_layer(Main.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[0][2] == 1.0):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                    for bu in Main.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            bu.click()
+
 
             indexTrace = Graphic((WIDTH, HEIGHT))
             for pos in self.indexPos:
@@ -60,8 +107,6 @@ class Game:
             fps.update()   
 
             #Render Update  
-            render.clear()
-            render.add_layer(webcam)
             render.add_layer(indexTrace)
             render.add_layer(Bins[0].sprite, Bins[0].pos)
             render.add_layer(Bins[1].sprite, Bins[1].pos)
