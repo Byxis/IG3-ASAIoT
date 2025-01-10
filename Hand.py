@@ -1,6 +1,8 @@
 from scipy.spatial import distance
 from HandGesture import HandGesture
 from Direction import Direction
+
+
 class Hand:
     def __init__(self, list):
         self.pos = list[0]

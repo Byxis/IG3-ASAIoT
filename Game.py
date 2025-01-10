@@ -8,6 +8,7 @@ from HandGesture import HandGesture
 from scipy.spatial import distance
 from Graphics import Graphic, SceneRender
 from Bin import Bin
+from Menus import *
 from Player import Player
 from Direction import Direction
 
@@ -15,9 +16,9 @@ class Game:
     def __init__(self, player):
         self.player = player
         self.activeWasteList = []
-        self.bins = {}
-        self.gameState = GameState.Playing
+        self.gameState = GameState.MainMenu
         self.indexPos = []
+        self.bins = {}
         self.player = Player(player)
     
     def play(self):
@@ -25,13 +26,12 @@ class Game:
         self.EPSILON = 1
         self.WIDTH = 400
         self.HEIGHT = 300
-
+        Main, Pause, Play, End = create_Menu_All()
         cap = cv2.VideoCapture(0)
         fps = FPSCounter()
         handSolution = mp.solutions.hands
         hands = handSolution.Hands()
         render = SceneRender((self.WIDTH, self.HEIGHT))
-
         self.bins = {"Recycling":Bin("Recycling", "recycling", self.HEIGHT), "Compost":Bin("Compost", "compost", self.HEIGHT), "Glass":Bin("Glass", "glass", self.HEIGHT), "Default":Bin("Default", "default", self.HEIGHT)}
 
         while cap.isOpened():
@@ -39,15 +39,64 @@ class Game:
             ret, img = cap.read()
             if not ret:
                 break
-
             img = cv2.flip(img, 1)
-
+            
             webcam = Graphic(img)
             webcam.resize((self.WIDTH, self.HEIGHT))
             output = render.get_image()
+            render.add_layer(webcam)
 
-            if self.gameState == GameState.Playing:
-                self.treatPicture(hands, output)
+            render.clear()
+            self.treatPicture(hands, img)
+
+            if self.gameState == GameState.PauseMenu:
+                render.add_layer(img)            
+                render.add_layer(Pause.show_menu())
+                
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[-1][2] > .8):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
+                    for bu in Pause.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            self.gameState = bu.click()
+
+            elif self.gameState == GameState.Playing:
+                render.add_layer(img)            
+                render.add_layer(Play.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[-1][2] > .8):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
+                    for bu in Play.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            self.gameState = bu.click()
+
+            elif self.gameState == GameState.EndMenu:
+                render.add_layer(img)            
+                render.add_layer(End.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[-1][2] > .8):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
+                    for bu in End.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            self.gameState = bu.click()
+                            
+
+            elif self.gameState == GameState.MainMenu:
+                render.add_layer(img)
+                render.add_layer(Main.show_menu())
+
+                if(len(self.indexPos) > 0):
+                    if(self.indexPos[-1][2] > 0.8):
+                        mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)                        
+                    for bu in Main.buttons:
+                        if bu.isClicked(mouse_x, mouse_y): #Changer x, y
+                            self.gameState = bu.click()
 
             indexTrace = Graphic((self.WIDTH, self.HEIGHT))
             for pos in self.indexPos:
@@ -156,6 +205,7 @@ class Game:
                 if(gesture == HandGesture.INDEX_RAISED):
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])
                     #cv2.circle(img, (x, y), 20, (255, 0, 0), cv2.FILLED)
+
             
 
 if __name__ == "__main__":
