@@ -1,25 +1,6 @@
 Name;Type;Location;Score;Speed;ComposedOf1;ComposedOf2;ComposedOf3;ComposedOf4;
 
-"Can";Recycling;"/Textures/Recyclable/can.png";10;3;None;None;None;None;
-"Newspaper";Recycling;"/Textures/Recyclable/newspaper.png";20;2;None;None;None;None;
-"Yogurt Pot";Recycling;"/Textures/Recyclable/yogurt_pot.png";10;2;None;None;None;None;
 
-"Goblet";NonRecycling;"/Textures/NonRecyclable/goblet.png";10;2;;;;
-"Chips Packaging";NonRecycling;"/Textures/NonRecyclable/chips_packaging.png";10;1;;;;;
-"Plastic Straw";NonRecycling;"/Textures/NonRecyclable/plastic_straw.png";10;3;;;;;
-"Yogurt Lid";NonRecycling;"/Textures/NonRecyclable/yogurt_lid.png";10;2;;;;;
-"Plastic Film";NonRecycling;"/Textures/NonRecyclable/plastic_film.png";10;2;;;;;
-
-"Eggshell";Compost;"/Textures/Biodegradable/eggshell.png";10;2;;;;;
-"Paper Towel";Compost;"/Textures/Biodegradable/paper_towel.png";10;2;;;;;
 "Dead Leaves";Compost;"/Textures/Biodegradable/dead_leaves.png";10;2;;;;;
-"Chips Remains";Compost;"/Textures/Biodegradable/chips_remains.png";10;2;;;;;
 
-"Beer Bottle";Glass;"/Textures/Glass/beer_bottle.png";10;2;;;;;
-"Light Bulb";Glass;"/Textures/Glass/light_bulb.png";10;2;;;;;
 "Jam Jar";Glass;"/Textures/Glass/jam_jar.png";10;2;;;;;
-"Broken Glass";Glass;"/Textures/Glass/broken_glass.png";10;2;;;;;
-
-"Yogurt";Composed;"/Textures/Composed/yogurt.png";10;2;"Yogurt Pot";"Yogurt Lid";;;
-"Chips";Composed;"/Textures/Composed/chips.png";10;2;"Chips Packaging";"Chips Remains";;;
-"Cafeteria Meal";Composed;"/Textures/Composed/cafeteria_meal.png";10;2;"Yogurt";"Leftover Food";"Paper Towel";"Broken Glass";
