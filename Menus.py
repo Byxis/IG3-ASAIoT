@@ -21,30 +21,30 @@ class Menu:
 
 def create_Menu_Main():
     Play = Button("Play", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
-    Quit = Button("Exit", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_quit)
+    Quit = Button("Exit", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_quit)
     buttons = [Play, Quit]
     Main = Menu("Main", buttons)
     Main.draw_menu()
     return Main
 
 def create_Menu_Pause():
-    Resume = Button("Resume", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
-    Quit = Button("Quit", round(6.9*WIDTH/8), round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_main)
+    Resume = Button("Resume", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
+    Quit = Button("Quit", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_main)
     buttons = [Resume, Quit]
     Pause = Menu("Pause", buttons)
     Pause.draw_menu()
     return Pause
 
 def create_Menu_Play():
-    Pause = Button("Pause", 10, 10, round(WIDTH/8), round(HEIGHT/6), button_pause)
+    Pause = Button("Pause", round(6.9*WIDTH/8), 10, round(WIDTH/8), round(HEIGHT/6), button_pause)
     buttons = [Pause]
     Play = Menu("Play", buttons)
     Play.draw_menu()
     return Play
 
 def create_Menu_End():
-    Restart = Button("Restart", 10, round(HEIGHT/6), round(2.6*WIDTH/8), round(HEIGHT/3), button_play)
-    Main = Button("Main", 10, round(4*HEIGHT/6), round(2.6*WIDTH/8), round(5*HEIGHT/6), button_main)
+    Restart = Button("Restart", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
+    Main = Button("Main", round(6.9*WIDTH/8), round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_main)
     buttons = [Restart, Main]
     End = Menu("End", buttons)
     End.draw_menu()
@@ -67,28 +67,19 @@ def create_Menu_All():
 
 
 def button_main():
-    global gameState
     print("main")    
-    gameState = GameState.MainMenu 
-    return
-
+    return GameState.MainMenu 
 def button_pause():
-    global gameState
     print("pause")
-    gameState = GameState.PauseMenu 
-    return
-
+    return GameState.PauseMenu 
+    
 def button_play():
-    global gameState
-    print("play")
-    gameState = GameState.Playing 
-    return
+    print("play") 
+    return GameState.Playing
 
 def button_quit():
-    global gameState
     print('quit')
-    gameState = GameState.MainMenu
-    return
+    return GameState.MainMenu
 
 # Fonction de rappel pour la souris
 def mouse_callback(event, x, y, flags, param):
@@ -133,7 +124,7 @@ def camera():
 
             for bu in Pause.buttons:
                 if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                    bu.click()
+                    gameState = bu.click()
 
         elif gameState == GameState.Playing:
             render.add_layer(img)            
@@ -141,7 +132,7 @@ def camera():
 
             for bu in Play.buttons:
                 if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                    bu.click()
+                    gameState = bu.click()
 
         elif gameState == GameState.EndMenu:
             render.add_layer(img)            
@@ -149,7 +140,7 @@ def camera():
 
             for bu in End.buttons:
                 if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                    bu.click()
+                    gameState = bu.click()
 
         elif gameState == GameState.MainMenu:
             render.add_layer(img)
@@ -157,10 +148,13 @@ def camera():
 
             for bu in Main.buttons:
                 if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                    bu.click()
+                    gameState = bu.click()
 
         if key == ord("q") or key == 27:
             break
+
+        if key == ord("e"):
+            gameState = GameState.EndMenu
       
         output = render.get_image()
         cv2.imshow("Main", output)

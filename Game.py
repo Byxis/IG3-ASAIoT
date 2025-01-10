@@ -45,53 +45,57 @@ class Game:
             output = render.get_image()
             render.add_layer(webcam)
 
-            self.treatPicture(hands, output)
-
             render.clear()
+            self.treatPicture(hands, img)
+
             if self.gameState == GameState.PauseMenu:
                 render.add_layer(img)            
                 render.add_layer(Pause.show_menu())
                 
                 if(len(self.indexPos) > 0):
-                    if(self.indexPos[0][2] == 1.0):
+                    if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
                     for bu in Pause.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                            bu.click()
+                            self.gameState = bu.click()
 
             elif self.gameState == GameState.Playing:
                 render.add_layer(img)            
                 render.add_layer(Play.show_menu())
 
                 if(len(self.indexPos) > 0):
-                    if(self.indexPos[0][2] == 1.0):
+                    if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
                     for bu in Play.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                            bu.click()
+                            self.gameState = bu.click()
 
             elif self.gameState == GameState.EndMenu:
                 render.add_layer(img)            
                 render.add_layer(End.show_menu())
 
                 if(len(self.indexPos) > 0):
-                    if(self.indexPos[0][2] == 1.0):
+                    if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)
                     for bu in End.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                            bu.click()
+                            self.gameState = bu.click()
+                            
 
             elif self.gameState == GameState.MainMenu:
                 render.add_layer(img)
                 render.add_layer(Main.show_menu())
 
                 if(len(self.indexPos) > 0):
-                    if(self.indexPos[0][2] == 1.0):
+                    if(self.indexPos[-1][2] > 0.8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
+                        print(mouse_x, mouse_y)                        
                     for bu in Main.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
-                            bu.click()
-
+                            self.gameState = bu.click()
 
             indexTrace = Graphic((WIDTH, HEIGHT))
             for pos in self.indexPos:
