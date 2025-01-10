@@ -7,13 +7,13 @@ class Bin:
         self.content = []
         sprite = Graphic()
         if _type == "recycling":
-            sprite = Graphic(cv2.imread("Textures/recycling.png", cv2.IMREAD_UNCHANGED))
+            sprite = Graphic(cv2.imread("Textures/Bins/recycling.png", cv2.IMREAD_UNCHANGED))
         elif _type == "glass":
-            sprite = Graphic(cv2.imread("Textures/glass.png", cv2.IMREAD_UNCHANGED))
+            sprite = Graphic(cv2.imread("Textures/Bins/glass.png", cv2.IMREAD_UNCHANGED))
         elif _type == "default":
-            sprite = Graphic(cv2.imread("Textures/default.png", cv2.IMREAD_UNCHANGED))
+            sprite = Graphic(cv2.imread("Textures/Bins/default.png", cv2.IMREAD_UNCHANGED))
         elif _type == "compost":
-            sprite = Graphic(cv2.imread("Textures/compost.png", cv2.IMREAD_UNCHANGED))
+            sprite = Graphic(cv2.imread("Textures/Bins/compost.png", cv2.IMREAD_UNCHANGED))
         size = 1
         sprite.resize((50*size, 75*size))
         self.sprite = sprite
