@@ -2,10 +2,8 @@ import WasteType
 import cv2
 from Graphics import Graphic, SceneRender
 from Waste import Waste
-from WasteFall import *
-
 class ComposedWaste:
-    def __init__(self, _name: str, _components, _pos, _speed, _sprite_path):
+    def __init__(self, _name: str, _components, _pos, _speed, _sprite_path, size=150):
         """
         Crée une instance de ComposedWaste
         Entrée :
@@ -17,24 +15,16 @@ class ComposedWaste:
         self.components = _components
         self.name = _name
         self.sprite = Graphic(cv2.imread(_sprite_path, cv2.IMREAD_UNCHANGED))
-        self.sprite.resize((150, 150), cv2.INTER_NEAREST)
+        self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.sprite_path = _sprite_path
-        self.radius = 50
+        self.radius = size/2
         self.position = _pos
         self.speed = _speed
 
     def slice(self, wasteList):
-        i = -50*len(self.components)/2
-        wasteList.remove(self)
-        for elt in self.components:
-            if type(elt) == Waste:
-                wasteSpawn(wasteList, elt.name, elt.type, elt.speed, elt.position + i, elt.sprite_path)
-                i += 50
-            elif type(elt) == ComposedWaste:
-                compWasteSpawn(wasteList, elt.name, elt.components, elt.speed, elt.position + i, elt.sprite_path)
-                i +=50
+        return self.components
     
-    def update(self, dt):
+    def update(self):
         self.position[0] += self.speed[0]
         self.position[1] += self.speed[1]
 
