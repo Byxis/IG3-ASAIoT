@@ -20,7 +20,7 @@ class ComposedWaste:
         self.radius = size/2
         self.position = _pos
         self.speed = _speed
-
+        self.isSliced = False
     def slice(self, wasteList):
         return self.components
     
@@ -30,7 +30,7 @@ class ComposedWaste:
 
     def move(self, pos):
         self.position = pos
-        return
+        
     
     def get_graphic(self):
         return self.sprite

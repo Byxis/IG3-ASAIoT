@@ -5,26 +5,105 @@ from Waste import Waste
 from ComposedWaste import ComposedWaste
 from WasteType import WasteType
 from FPSCounter import FPSCounter
+from random import randint
+import csv
 
 
-def wasteSpawn(wasteList, name, type, speed, pos, sprite_path):
+
+def wasteSpawn(WIDTH, wasteList, name, type, speed, sprite_path):
     """
-    Ajoute un dechet à la liste des dechets
+    Ajoute un déchet à la liste des déchets.
     Entrée :
-    wasteList : la liste des dechets
-    name, type, speed, pos, sprite_path : voir spécif Waste
+    wasteList : la liste des déchets
+    name, type, speed, pos, sprite_path : spécifications du Waste
     """
-    wasteList.append(Waste(name, type, speed, pos, sprite_path))
+    positions = []
+    for i in range(0, 800, 80):
+        positions.append([i, -75])
+    
+    isOccupied = True
+    while isOccupied:
+        isOccupied = False
+        i = randint(0, 9)
+        for elt in wasteList:
+            if elt.position == positions[i]:
+                isOccupied = True
+    
+    wasteList.append(Waste(name, type, speed, positions[i], sprite_path))
+    print(elt.name for elt in wasteList)
 
 
-def compWasteSpawn(wasteList, name, component, speed, pos, sprite_path):
+
+
+def addWasteToWasteList(wasteList, name, type, speed, position, sprite_path):
+    positions = []
+    for i in range(0, 800, 80):
+        positions.append([i, -75])
+    for elt in wasteList:
+        isOccupied = True
+        while isOccupied:
+            isOccupied = False
+            i = randint(0, 9)
+            for elt in wasteList:
+                if elt.position == positions[i]:
+                    isOccupied = True
+    wasteList.append(Waste(name, type, speed, position, sprite_path))
+    print(elt.name for elt in wasteList)
+
+
+
+
+
+
+def compWasteSpawn(WIDTH, wasteList, name, component, speed, sprite_path):
     """
     Ajoute un dechet composé à la liste des dechets
     Entrée : 
     wasteList : la liste des dechets
     name, type, speed, pos, sprite_path : voir spécif ComposedWaste
     """
-    wasteList.append(ComposedWaste(name, component, pos, speed, sprite_path))
+    positions = []
+    for i in range(0, 800, 80):
+        positions.append([i, -75])
+    
+    isOccupied = True
+    while isOccupied:
+        isOccupied = False
+        i = randint(0, 9)
+        for elt in wasteList:
+            if elt.position == positions[i]:
+                isOccupied = True
+    wasteList.append(ComposedWaste(name, component, positions[i], speed, sprite_path))
+
+
+
+
+
+
+
+def addCompWasteToWasteList(wasteList, name, component, position, speed, sprite_path):
+    """
+    Ajoute un dechet composé à la liste des dechets lorsqu'il provient d'un slice
+    Entrée : 
+    wasteList : la liste des dechets
+    name, type, speed, pos, sprite_path : voir spécif ComposedWaste
+    """
+    positions = []
+    for i in range(0, 800, 80):
+        positions.append([i, -75])
+    for elt in wasteList:
+        isOccupied = True
+        while isOccupied:
+            isOccupied = False
+            i = randint(0, 9)
+            for elt in wasteList:
+                if elt.position == positions[i]:
+                    isOccupied = True
+    wasteList.append(ComposedWaste(name, type, speed, position, sprite_path))
+    print(elt.name for elt in wasteList)
+
+
+
 
 def createWastesFromSlice(wasteList, compWaste):
     """
@@ -34,20 +113,30 @@ def createWastesFromSlice(wasteList, compWaste):
     wasteList : la liste de dechets
     compWaste : le dechet qui est slice
     """
+    positions = []
+    h = compWaste.position[1]
+    for i in range(0, 800, 80):
+        positions.append([i, -75])
     components = compWaste.components
-    i = -50*len(components)/2
     wasteList.remove(compWaste)
     for elt in components:
-        if compWaste.position[0] + i - 75 < 0:
-            i += 100
-        if compWaste.position[0] + i*len(components)/2 > 800: #800 : width de la fenetre
-            i -= 100*len(components)
+        isOccupied = True
+        while isOccupied:
+            isOccupied = False
+            i = randint(0, 9)
+            for elt in wasteList:
+                if elt.position == positions[i]:
+                    isOccupied = True
         if type(elt) == Waste:
-            wasteSpawn(wasteList, elt.name, elt.type, elt.speed, [compWaste.position[0] + i, compWaste.position[1]], elt.sprite_path)
-            i += 100
+            addWasteToWasteList(wasteList, elt.name, elt.type, elt.speed, [positions[i][0], h], elt.sprite_path)
         elif type(elt) == ComposedWaste:
-            compWasteSpawn(wasteList, elt.name, elt.components, elt.speed, [compWaste.position[0] + i, compWaste.position[1]], elt.sprite_path)
-            i +=100
+            addCompWasteToWasteList(wasteList, elt.name, elt.components, elt.speed, [positions[i][0], h], elt.sprite_path)
+
+
+
+
+
+
 
 def updateAllWaste(render, wasteList, HEIGHT):
     """
@@ -65,26 +154,52 @@ def updateAllWaste(render, wasteList, HEIGHT):
             if type(w) == ComposedWaste:
                 w.update()
 
-                if (w.position[1] > HEIGHT - w.radius - 300): #A remplacer par l'évenement quand le joueur slice
+                
+                #if (w.position[1] > HEIGHT - w.radius - 300): #A remplacer par l'évenement quand le joueur slice
+                    #createWastesFromSlice(wasteList, w)
+                
+                if w.position[1] > HEIGHT - w.radius - 300:
+                    w.isSliced = True
+                if w.isSliced:
                     createWastesFromSlice(wasteList, w)
                 if w.position[1] < HEIGHT - w.radius:
                     render.add_layer(w.get_graphic(), (w.position[0], w.position[1]))
     return render
+
+
+
+
+
+def createWasteCatalog(WIDTH):
+    with open('Wastes.csv', mode='r', encoding='utf-8') as file:
+        csv_reader = csv.reader(file)
+        l = list(csv_reader)
+        wasteCatalog = []
+        for line in l:
+            if line[5] == 'None':
+                wasteSpawn(WIDTH, wasteCatalog, line[0], line[1], line[4], line[2])
+            else:
+                if line[7] != 'None':     
+                    compWasteSpawn(WIDTH, wasteCatalog, line[0], [line[5], line[6], line[7]], line[4], line[2])
+                elif line[7] == 'None' and line[6] != 'None':
+                    compWasteSpawn(WIDTH, wasteCatalog, line[0], [line[5], line[6]], line[4], line[2])
+    return wasteCatalog
+
 
 def main():
     EPSILON = 1
     WIDTH, HEIGHT = 800, 600
     
     wasteList = []
-    #wasteSpawn(wasteList, "dechet", 'Recyclable',[0, 4], [250, 100], "output.png", WIDTH)
-    #wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,3], [400, 100], "output.png", WIDTH)
-    #wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,2], [550, 100], "output.png", WIDTH)
-    #wasteSpawn(wasteList, "dechet", 'Recyclable',[0 ,1], [700, 100], "output.png", WIDTH)
+    wasteSpawn(WIDTH, wasteList, "dechet", 'Recyclable',[0 ,1], "Textures/Waste/output.png")
+    wasteSpawn(WIDTH, wasteList, "dechet", 'Recyclable',[0 ,1], "Textures/Waste/output.png")
+    wasteSpawn(WIDTH, wasteList, "dechet", 'Recyclable',[0 ,1], "Textures/Waste/output.png")
+    wasteSpawn(WIDTH, wasteList, "dechet", 'Recyclable',[0 ,1], "Textures/Waste/output.png")
 
     waste1 = Waste("dechet", 'Recyclable',[0 ,1], [700, 100], "Textures/Waste/output.png")
     compWaste1 = ComposedWaste("dechetcomp", [waste1, waste1, waste1], [0, 1], [100, 100], "Textures/Waste/output2.png")
     compWaste2 = ComposedWaste("dechetcomp2", [waste1, compWaste1], [0, 1], [100, 200], "Textures/Waste/output2.png")
-    compWasteSpawn(wasteList, "dechetcomp", [waste1, waste1, waste1, waste1, waste1, waste1, waste1], [0, 2], [600, 100], "Textures/Waste/output2.png")
+    compWasteSpawn(WIDTH, wasteList, "dechetcomp", [waste1, waste1, waste1, waste1, waste1, waste1, waste1], [0, 2], "Textures/Waste/output2.png")
     #compWasteSpawn(wasteList, "dechetcomp2", [waste1, compWaste1], [0, 1], [100, 200], "output2.png")
     # Utilisation de la webcam
     cap = cv2.VideoCapture(0)

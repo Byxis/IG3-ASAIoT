@@ -26,7 +26,7 @@ class Waste:
     
     def move(self, pos):
         self.position = pos
-        return
+        
     
     def get_graphic(self):
         return self.sprite
