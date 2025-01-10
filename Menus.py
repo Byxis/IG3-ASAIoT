@@ -20,80 +20,66 @@ class Menu:
         return self.caneva.get_image()
 
 def create_Menu_Main():
-    Play = Button("Play", 10, 100, 260, 200, play)
-    Quit = Button("Exit", 10, 400, 260, 500, quit)
+    Play = Button("Play", 10, 100, 260, 200, button_play)
+    Quit = Button("Exit", 10, 400, 260, 500, button_quit)
     buttons = [Play, Quit]
     Main = Menu("Main", buttons)
+    Main.draw_menu()
     return Main
 
 def create_Menu_Pause():
-    Resume = Button("Resume", 500, 50, 700, 150, resume)
-    Quit = Button("Quit", 500, 450, 700, 550, quit)
+    Resume = Button("Resume", 500, 50, 700, 150, button_play)
+    Quit = Button("Quit", 500, 450, 700, 550, button_main)
     buttons = [Resume, Quit]
     Pause = Menu("Pause", buttons)
+    Pause.draw_menu()
     return Pause
 
 def create_Menu_Play():
-    Pause = Button("Pause", 0, 0, 100, 100, pause)
+    Pause = Button("Pause", 0, 0, 100, 100, button_pause)
     buttons = [Pause]
     Play = Menu("Play", buttons)
+    Play.draw_menu()
     return Play
 
 def create_Menu_End():
-    Restart = Button("Restart", 10, 100, 260, 200, restart)
-    Main = Button("Main", 10, 400, 260, 500, main)
+    Restart = Button("Restart", 10, 100, 260, 200, button_play)
+    Main = Button("Main", 10, 400, 260, 500, button_main)
     buttons = [Restart, Main]
     End = Menu("End", buttons)
+    End.draw_menu()
     return End
 
 def create_Menu_All():
-    global Main, Pause, Play, End
     Main = create_Menu_Main()
     Pause = create_Menu_Pause()
     Play = create_Menu_Play()
     End = create_Menu_End()
+    return Main, Pause, Play, End
 
-def draw_Menu_All():
-    global Main, Pause, Play, End
-    Main.draw_menu()
-    Pause.draw_menu()
-    Play.draw_menu()
-    End.draw_menu()
 
-def resume():
+def button_main():
     global gameState
-    print('resume')
-    gameState = GameState.Playing
+    print("main")    
+    gameState = GameState.MainMenu 
     return
 
-def quit():
-    global gameState
-    print('quit')
-    gameState = GameState.MainMenu
-    return
-
-def play():
-    global gameState
-    print("play")
-    gameState = GameState.Playing 
-    return
-
-def pause():
+def button_pause():
     global gameState
     print("pause")
     gameState = GameState.PauseMenu 
     return
 
-def restart():
+def button_play():
     global gameState
-    print("restart")    
+    print("play")
     gameState = GameState.Playing 
     return
 
-def main():
+def button_quit():
     global gameState
-    print("main")    
-    gameState = GameState.MainMenu 
+    print('quit')
+    gameState = GameState.MainMenu
     return
 
 # Fonction de rappel pour la souris
@@ -110,10 +96,7 @@ render.clear()
 
 render.add_layer(caneva.get_image())
 
-create_Menu_All()
-
-draw_Menu_All()
-
+Main, Pause, Play, End = create_Menu_All()
 
 def camera():
     global mouse_x, mouse_y
@@ -133,7 +116,6 @@ def camera():
         img = cv2.resize(img, (WIDTH, HEIGHT))
         img = cv2.flip(img, 1)
         key = cv2.waitKey(EPSILON) & 0xFF
-
         
         render.clear()
 
