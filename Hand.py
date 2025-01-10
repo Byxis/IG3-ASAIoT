@@ -105,8 +105,8 @@ class Hand:
     def isRockNRollSign(self):
         # Un geste "Rock'n Roll" signifie que le pouce, l'annulaire et le majeur se touchent, et les autres doigts sont dépliés
         ok_sign = all([
-                distance.euclidean(self.thumb[3], self.ring[3]) < self.scale,
-                distance.euclidean(self.thumb[3], self.middle[3]) < self.scale,
+                distance.euclidean(self.thumb[3], self.ring[3]) < self.scale*2,
+                distance.euclidean(self.thumb[3], self.middle[3]) < self.scale*2,
                 self.index[3][1] < self.index[0][1],
                 self.little[3][1] < self.little[0][1]])
         return ok_sign

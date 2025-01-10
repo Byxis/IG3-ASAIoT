@@ -25,6 +25,7 @@ class Game:
         self.EPSILON = 1
         self.WIDTH = 400
         self.HEIGHT = 300
+        self.upscale = 2
 
         cap = cv2.VideoCapture(0)
         fps = FPSCounter()
@@ -63,16 +64,17 @@ class Game:
             render.clear()
             render.add_layer(webcam)
             render.add_layer(indexTrace)
-            if(self.player.leftHand != None):
-                render.add_layer(self.player.leftHand.sprite, self.player.leftHand.pos)
-            if(self.player.rightHand != None):
-                render.add_layer(self.player.rightHand.sprite, self.player.rightHand.pos)
 
             #Display
             output = fps.display(output)
 
+            output = cv2.resize(output, (400*self.upscale, 300*self.upscale), interpolation=cv2.INTER_LANCZOS4)
 
-            output = cv2.resize(output, (800, 600), interpolation=cv2.INTER_LANCZOS4)
+            if(self.player.leftHand != None):
+                render.add_layer(self.player.leftHand.sprite, [self.player.leftHand.pos[0], self.player.leftHand.pos[1]])
+            if(self.player.rightHand != None):
+                render.add_layer(self.player.rightHand.sprite, [self.player.rightHand.pos[0], self.player.rightHand.pos[1]])
+
             #Affichage du jeu
             cv2.imshow("Jeu", output)
 
