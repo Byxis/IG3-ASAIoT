@@ -1,6 +1,6 @@
 from scipy.spatial import distance
 from HandGesture import HandGesture
-
+from Direction import Direction
 class Hand:
     def __init__(self, list):
         self.pos = list[0]
@@ -50,6 +50,10 @@ class Hand:
         # Vérifier si c'est un geste "OK"
         elif self.isOkSign():
             return HandGesture.OK_SIGN
+        
+        # Vérifier si c'est un geste "Rock'n Roll"
+        elif self.isRockNRollSign():
+            return HandGesture.ROCK_N_ROLL
 
         # Si aucun geste connu n'est détecté
         return HandGesture.NONE
@@ -97,3 +101,17 @@ class Hand:
                 self.ring[3][1] < self.ring[0][1],
                 self.little[3][1] < self.little[0][1]])
         return ok_sign
+
+    def isRockNRollSign(self):
+        # Un geste "Rock'n Roll" signifie que le pouce, l'annulaire et le majeur se touchent, et les autres doigts sont dépliés
+        ok_sign = all([
+                distance.euclidean(self.thumb[3], self.ring[3]) < self.scale,
+                distance.euclidean(self.thumb[3], self.middle[3]) < self.scale,
+                self.index[3][1] < self.index[0][1],
+                self.little[3][1] < self.little[0][1]])
+        return ok_sign
+
+    def getHandDirection(self):
+        if self.thumb[3][0] < self.little[3][0]:
+            return Direction.RIGHT
+        return Direction.LEFT
