@@ -26,9 +26,8 @@ class Game:
         self.EPSILON = 1
         self.WIDTH = 400
         self.HEIGHT = 300
-        self.upscale = 2
         
-        Main, Pause, Play, End = create_Menu_All()
+        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT)
         cap = cv2.VideoCapture(0)
         fps = FPSCounter()
         handSolution = mp.solutions.hands
@@ -42,11 +41,11 @@ class Game:
             if not ret:
                 break
             img = cv2.flip(img, 1)
+            img = cv2.resize(img, (self.WIDTH, self.HEIGHT))
             
             webcam = Graphic(img)
             webcam.resize((self.WIDTH, self.HEIGHT))
             output = render.get_image()
-            render.add_layer(webcam)
 
             render.clear()
             self.treatPicture(hands, img)
@@ -58,7 +57,6 @@ class Game:
                 if(len(self.indexPos) > 0):
                     if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
-                        print(mouse_x, mouse_y)
                     for bu in Pause.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
                             self.gameState = bu.click()
@@ -70,7 +68,6 @@ class Game:
                 if(len(self.indexPos) > 0):
                     if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
-                        print(mouse_x, mouse_y)
                     for bu in Play.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
                             self.gameState = bu.click()
@@ -82,7 +79,6 @@ class Game:
                 if(len(self.indexPos) > 0):
                     if(self.indexPos[-1][2] > .8):
                         mouse_x, mouse_y = self.indexPos[0][0:2]
-                        print(mouse_x, mouse_y)
                     for bu in End.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
                             self.gameState = bu.click()
@@ -94,8 +90,7 @@ class Game:
 
                 if(len(self.indexPos) > 0):
                     if(self.indexPos[-1][2] > 0.8):
-                        mouse_x, mouse_y = self.indexPos[0][0:2]
-                        print(mouse_x, mouse_y)                        
+                        mouse_x, mouse_y = self.indexPos[0][0:2]         
                     for bu in Main.buttons:
                         if bu.isClicked(mouse_x, mouse_y): #Changer x, y
                             self.gameState = bu.click()
@@ -111,19 +106,18 @@ class Game:
             fps.update()   
 
             #Render Update  
-            render.clear()
-            render.add_layer(webcam)
             render.add_layer(indexTrace)
 
             #Display
             output = fps.display(output)
 
-            output = cv2.resize(output, (400*self.upscale, 300*self.upscale), interpolation=cv2.INTER_LANCZOS4)
 
             if(self.player.leftHand != None):
                 render.add_layer(self.player.leftHand.sprite, [self.player.leftHand.pos[0], self.player.leftHand.pos[1]])
             if(self.player.rightHand != None):
                 render.add_layer(self.player.rightHand.sprite, [self.player.rightHand.pos[0], self.player.rightHand.pos[1]])
+
+            output = cv2.resize(output, (800, 600), interpolation=cv2.INTER_LANCZOS4)
 
             #Affichage du jeu
             cv2.imshow("Jeu", output)
