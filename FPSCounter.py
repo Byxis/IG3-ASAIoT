@@ -23,7 +23,7 @@ class FPSCounter:
             self.frames = 0
 
     def display(self, img, position = (10, 30)):
-        cv2.putText(img, f"FPS: {round(self.fps)}", position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.putText(img, f"FPS: {round(self.fps)}", position, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
         return img
 
     def limitFPS(self, maxFPS = None):
