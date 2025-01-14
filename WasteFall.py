@@ -108,7 +108,7 @@ def addCompWasteToWasteList(wasteList, name, component, position, speed, sprite_
 
 
 
-def createWastesFromSlice(wasteList, compWaste):
+def createWastesFromSlice(wasteList, compWaste, wasteCatalog):
     """
     Fonction a appeler quand un dechet composé est slice
     Supprime le dechet composé de la liste de dechet et ajoute ses composants
@@ -120,9 +120,9 @@ def createWastesFromSlice(wasteList, compWaste):
     h = compWaste.position[1]
     for i in range(0, 700, 70):
         positions.append([i, -75])
-    components = compWaste.components
+    comp = compWaste
     wasteList.remove(compWaste)
-    for elt in components:
+    for elt in comp.components:
         isOccupied = True
         while isOccupied:
             isOccupied = False
@@ -130,11 +130,11 @@ def createWastesFromSlice(wasteList, compWaste):
             for elt in wasteList:
                 if elt.position == positions[i]:
                     isOccupied = True
-        if type(elt) == Waste:
-            addWasteToWasteList(wasteList, elt.name, elt.type, elt.speed, [positions[i][0], h], elt.sprite_path)
-        elif type(elt) == ComposedWaste:
-            addCompWasteToWasteList(wasteList, elt.name, elt.components, elt.speed, [positions[i][0], h], elt.sprite_path)
-
+        for i in range(len(wasteCatalog)):
+            if wasteCatalog[i].name == elt:
+                a = wasteCatalog[i]
+                a.move([positions[i][0], comp.position[1]])
+                wasteList.append(wasteCatalog[i])
 
 
 
@@ -149,8 +149,7 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog):
     wasteList : la liste de tous les dechets
     HEIGHT : la hauteur de la fenêtre
     """
-    if(len(wasteList) < 4):
-        wasteSpawn(WIDTH, wasteList, wasteCatalog)
+    
     for w in wasteList:
         if type(w) == Waste:
             w.update()
@@ -165,10 +164,14 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog):
             
             if w.position[1] > HEIGHT - w.radius - 300:
                 w.isSliced = True
-            #if w.isSliced:
-                #createWastesFromSlice(wasteList, w)
+            if w.isSliced:
+                createWastesFromSlice(wasteList, w, wasteCatalog)
             if w.position[1] < HEIGHT - w.radius:
                 render.add_layer(w.get_graphic(), (w.position[0], w.position[1]))
+            else:
+                wasteList.remove(w)
+    if(len(wasteList) < 4):
+        wasteSpawn(WIDTH, wasteList, wasteCatalog)
     return render
 
 
