@@ -15,8 +15,7 @@ class Bin:
         elif _type == "compost":
             sprite = Graphic(cv2.imread("Textures/Bins/compost.png", cv2.IMREAD_UNCHANGED))
         size = 1
-        sprite.resize((50*size, 75*size))
-        self.sprite = sprite
+        self.sprite = sprite.resize((50*size, 75*size), interpolation=cv2.INTER_AREA)
         self.pos = [0,_height-50]
     
     def updatePos(self, pos):
