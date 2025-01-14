@@ -79,4 +79,4 @@ def button_play():
 
 def button_quit():
     print('quit')
-    return GameState.MainMenu
+    return GameState.Stop

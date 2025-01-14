@@ -4,18 +4,18 @@ import time
 class FPSCounter:
     def __init__(self):
         self.FPS_limit = None
-        self.startTime = time.time()
+        self.startTime = time.perf_counter()
         self.frames = 0
         self.fps = 0
-        self.lastTime = time.time()
+        self.lastTime = time.perf_counter()
         self.dt = 0
 
     def update(self):
-        currentTime = time.time()
+        currentTime = time.perf_counter()
         self.dt = currentTime - self.lastTime
         # if self.FPS_limit is not None and self.FPS_limit > 0 and self.fps > self.FPS_limit:
         #     time.sleep(0.1)
-        self.lastTime = time.time()
+        self.lastTime = time.perf_counter()
         self.frames += 1
         if self.frames > 10:
             self.fps = self.frames / (currentTime - self.startTime)

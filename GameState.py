@@ -5,3 +5,4 @@ class GameState(Enum):
     Playing = 1
     PauseMenu = 2
     EndMenu = 3
+    Stop = -1
