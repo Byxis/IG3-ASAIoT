@@ -3,7 +3,8 @@ import cv2
 from Graphics import Graphic, SceneRender
 from Waste import Waste
 class ComposedWaste:
-    def __init__(self, _name: str, _components, _pos, _speed, _sprite_path, size=150):
+
+    def __init__(self, _name: str, _components, _speed, _sprite_path, size=150):
         """
         Crée une instance de ComposedWaste
         Entrée :
@@ -18,19 +19,19 @@ class ComposedWaste:
         self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.sprite_path = _sprite_path
         self.radius = size/2
-        self.position = _pos
         self.speed = _speed
+        self.isSliced = False
+        self.position = [0, 0]
 
     def slice(self, wasteList):
         return self.components
     
     def update(self):
-        self.position[0] += self.speed[0]
-        self.position[1] += self.speed[1]
+        self.position[1] += int(self.speed)
 
     def move(self, pos):
         self.position = pos
-        return
+        
     
     def get_graphic(self):
         return self.sprite
