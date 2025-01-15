@@ -13,6 +13,7 @@ from Player import Player
 from Direction import Direction
 from WasteType import WasteType
 import threading
+from WasteFall import *
 
 class Game:
     def __init__(self, player):
@@ -20,6 +21,9 @@ class Game:
         self.activeWasteList = []
         self.gameState = GameState.MainMenu
         self.indexPos = []
+        self.mouse = [-100, -100]
+        self.mouseDelay = 0.5
+        self.mouseCurrentDelay = 0
 
     def play(self):
         # Initialisation
@@ -37,6 +41,7 @@ class Game:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
         cap.set(cv2.CAP_PROP_FPS, 30)
+
         fps = FPSCounter()
         handSolution = mp.solutions.hands
         hands = handSolution.Hands()
@@ -48,6 +53,12 @@ class Game:
             "Default": Bin("Default", WasteType.NonRecycling, self.HEIGHT),
             "Floor": Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
+
+        wasteDefaultDelay = 2
+        wasteCurrentDelay = 0
+        
+        wasteCatalog = createWasteCatalog()
+        wasteList = []
         
         while cap.isOpened():
             # Update image
@@ -85,7 +96,14 @@ class Game:
             
             if self.gameState == GameState.Playing:
                 self.renderBins(render)
-
+                
+                size = len(wasteList)
+                indexPos = [-100, -100]
+                render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
+                if size < len(wasteList):
+                    wasteCurrentDelay = wasteDefaultDelay
+                if(wasteCurrentDelay >= 0):
+                    wasteCurrentDelay -= fps.dt*0.5
             # Affichage du jeu
             cv2.imshow("Jeu", output)
 
@@ -112,10 +130,8 @@ class Game:
             render.add_layer(img)
             render.add_layer(menu.show_menu())
 
-            if len(self.indexPos) > 0 and self.indexPos[-1][2] > 0.8:
-                mouse_x, mouse_y = self.indexPos[0][0:2]
-                for bu in menu.buttons:
-                    if bu.isClicked(mouse_x, mouse_y):
+            for bu in menu.buttons:
+                    if bu.isClicked(self.mouse[0], self.mouse[1]):
                         self.gameState = bu.click()
 
     def renderBins(self, render):
@@ -150,9 +166,16 @@ class Game:
                     self.player.changeBin(hand.getHandDirection(), None)
 
                 cv2.putText(img, f"{gesture.name} ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
-
+                
                 if gesture == HandGesture.INDEX_RAISED:
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])
+                    self.mouse = hand.index[3]
+                    self.mouseCurrentDelay = self.mouseDelay
+        if(self.mouseCurrentDelay > 0):
+            self.mouseCurrentDelay -= 0.1
+            if self.mouseCurrentDelay <= 0:
+                self.mouse = [-100, -100]
+                
 
     def getBinForGesture(self, gesture):
         bin_map = {

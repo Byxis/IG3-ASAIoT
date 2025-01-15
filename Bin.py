@@ -2,6 +2,8 @@ from Graphics import Graphic
 from ComposedWaste import ComposedWaste
 from WasteType import WasteType
 import cv2
+from ComposedWaste import ComposedWaste
+
 class Bin:
     def __init__(self, _name, _type, _height):
         self.name = _name
