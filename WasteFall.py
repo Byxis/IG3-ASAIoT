@@ -84,9 +84,8 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
             print("Score : ", player.score)
         if type(w) == Waste:
             if player.leftHand != None:
-                if player.leftHand.isCompatible(w) and (player.leftHand.pos[0] - w.position[0])**2  <= 75**2 :
+                if player.leftHand.isCompatible(w) and (player.leftHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
-                    w.update()
                     w.update()
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
@@ -95,10 +94,10 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                     print("Score : ", player.score)
             
             if player.rightHand != None:
-                if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 75**2 :
+                if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
                     w.update()
-                    w.update()
+
                 if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:
                     if(player.rightHand.isCompatible(w)):
                         player.score += 1
@@ -120,7 +119,9 @@ def createWasteCatalog():
         for line in l[1:]:
             if(len(line) > 0):
                 if line[5] == 'None':
-                    wasteCatalog.append(Waste(line[0], line[1], line[4], line[2]))
+                    print(line[1])
+                    print(WasteType[line[1]])
+                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2]))
                 else:
                     if line[7] != 'None':     
                         wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2]))
