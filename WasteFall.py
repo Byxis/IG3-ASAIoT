@@ -7,8 +7,24 @@ from WasteType import WasteType
 from FPSCounter import FPSCounter
 from random import randint
 import csv
+from copy import copy
 
+def getRandomPosition(WIDTH, wasteList):
+    positions = []
+    for i in range(0, WIDTH, 70):
+        if(not isSpawnPositionOccupied([i, -75], wasteList)):
+            positions.append([i, -75])
+    if(len(positions) == 0):
+        return [randint(0, WIDTH), -75]
+    elif len(positions) == 1:
+        return positions[0]
+    return positions[randint(0, len(positions)-1)]
 
+def isSpawnPositionOccupied(position, wasteList):
+    for elt in wasteList:
+        if (elt.position[0] - position[0])**2  <= 50**2 and (elt.position[1] - position[1]) <= (75*3)**2:
+            return True
+    return False
 
 def wasteSpawn(WIDTH, wasteList, wasteCatalog):
     """
@@ -17,131 +33,39 @@ def wasteSpawn(WIDTH, wasteList, wasteCatalog):
     wasteList : la liste des déchets
     name, type, speed, pos, sprite_path : spécifications du Waste
     """
-    positions = []
-    for i in range(0, 700, 70):
-        positions.append([i, -75])
-    
-    isOccupied = True
-    while isOccupied:
-        isOccupied = False
-        i = randint(0, 9)
-        for elt in wasteList:
-            if elt.position == positions[i]:
-                isOccupied = True
-    
-    wasteList.append(wasteCatalog[randint(0, len(wasteCatalog))])
-    wasteList[-1].move(positions[i])
+    position = getRandomPosition(WIDTH, wasteList)
 
+    a = copy(wasteCatalog[randint(0, len(wasteCatalog)-1)])
 
+    wasteList.append(a)
+    wasteList[-1].move(position)
 
+def checkCollision(x, y, waste):
+    if waste.position[0] <= x <= waste.position[0] + waste.radius*2 and waste.position[1] <= y <= waste.position[1] + waste.radius*2:
+        return True
+    return False
 
-def addWasteToWasteList(wasteList, name, type, speed, position, sprite_path):
-    positions = []
-    for i in range(0, 700, 70):
-        positions.append([i, -75])
-    for elt in wasteList:
-        isOccupied = True
-        while isOccupied:
-            isOccupied = False
-            i = randint(0, 9)
-            for elt in wasteList:
-                if elt.position == positions[i]:
-                    isOccupied = True
-    wasteList.append(Waste(name, type, speed, position, sprite_path))
-
-
-
-
-
-
-def compWasteSpawn(WIDTH, wasteList, name, component, speed, sprite_path):
-    """
-    Ajoute un dechet composé à la liste des dechets
-    Entrée : 
-    wasteList : la liste des dechets
-    name, type, speed, pos, sprite_path : voir spécif ComposedWaste
-    """
-    positions = []
-    for i in range(0, 700, 70):
-        positions.append([i, -75])
-    
-    isOccupied = True
-    while isOccupied:
-        isOccupied = False
-        i = randint(0, 9)
-        for elt in wasteList:
-            if elt.position == positions[i]:
-                isOccupied = True
-    
-    cwaste = ComposedWaste(name, component, speed, sprite_path)
-    cwaste.move(positions[i])
-    wasteList.append()
-
-
-
-
-
-
-
-
-def addCompWasteToWasteList(wasteList, name, component, position, speed, sprite_path):
-    """
-    Ajoute un dechet composé à la liste des dechets lorsqu'il provient d'un slice
-    Entrée : 
-    wasteList : la liste des dechets
-    name, type, speed, pos, sprite_path : voir spécif ComposedWaste
-    """
-    positions = []
-    for i in range(0, 700, 70):
-        positions.append([i, -75])
-    for elt in wasteList:
-        isOccupied = True
-        while isOccupied:
-            isOccupied = False
-            i = randint(0, 9)
-            for elt in wasteList:
-                if elt.position == positions[i]:
-                    isOccupied = True
-    wasteList.append(ComposedWaste(name, type, speed, position[i], sprite_path))
-    print(elt.name for elt in wasteList)
-
-
-
-
-def createWastesFromSlice(wasteList, compWaste):
+def createWastesFromSlice(WIDTH, wasteList, compWaste, wasteCatalog):
     """
     Fonction a appeler quand un dechet composé est slice
     Supprime le dechet composé de la liste de dechet et ajoute ses composants
     Entrée : 
-    wasteList : la liste de dechets
+    wasteList : la liste de dechets sur le jeu
     compWaste : le dechet qui est slice
+    wasteCatalog : la liste de tous les dechets
     """
-    positions = []
-    h = compWaste.position[1]
-    for i in range(0, 700, 70):
-        positions.append([i, -75])
     components = compWaste.components
     wasteList.remove(compWaste)
     for elt in components:
-        isOccupied = True
-        while isOccupied:
-            isOccupied = False
-            i = randint(0, 9)
-            for elt in wasteList:
-                if elt.position == positions[i]:
-                    isOccupied = True
-        if type(elt) == Waste:
-            addWasteToWasteList(wasteList, elt.name, elt.type, elt.speed, [positions[i][0], h], elt.sprite_path)
-        elif type(elt) == ComposedWaste:
-            addCompWasteToWasteList(wasteList, elt.name, elt.components, elt.speed, [positions[i][0], h], elt.sprite_path)
+        for i in range(len(wasteCatalog)):
+            if elt == wasteCatalog[i].name:
+                waste = copy(wasteCatalog[i])
+                position = getRandomPosition(WIDTH, wasteList)
+                waste.move([position[0], position[1]])
+                wasteList.append(waste)
+                break
 
-
-
-
-
-
-
-def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog):
+def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player):
     """
     Fonction de mise à jour de la position et de l'etat de tous les dechets.
     Entrée:
@@ -149,47 +73,60 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog):
     wasteList : la liste de tous les dechets
     HEIGHT : la hauteur de la fenêtre
     """
-    if(len(wasteList) < 4):
+    if(len(wasteList) < 4 and wasteCurrentDelay <= 0):
         wasteSpawn(WIDTH, wasteList, wasteCatalog)
     for w in wasteList:
+        render.add_layer(w.get_graphic(), (w.position[0], w.position[1]))
+        w.update()
+        if w.position[1] > HEIGHT - w.radius:
+            wasteList.remove(w)
+            player.score -= 1
+            print("Score : ", player.score)
         if type(w) == Waste:
-            w.update()
-            if w.position[1] < HEIGHT - w.radius:
-                render.add_layer(w.get_graphic(), (w.position[0], w.position[1]))
-        if type(w) == ComposedWaste:
-            w.update()
+            if player.leftHand != None:
+                if player.leftHand.isCompatible(w) and (player.leftHand.pos[0] - w.position[0])**2  <= 75**2 :
+                    #Boost speed
+                    w.update()
+                    w.update()
 
+                if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
+                    player.score += 1
+                    wasteList.remove(w)
+                    print("Score : ", player.score)
             
-            #if (w.position[1] > HEIGHT - w.radius - 300): #A remplacer par l'évenement quand le joueur slice
-                #createWastesFromSlice(wasteList, w)
-            
-            if w.position[1] > HEIGHT - w.radius - 300:
-                w.isSliced = True
-            #if w.isSliced:
-                #createWastesFromSlice(wasteList, w)
-            if w.position[1] < HEIGHT - w.radius:
-                render.add_layer(w.get_graphic(), (w.position[0], w.position[1]))
+            if player.rightHand != None:
+                if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 75**2 :
+                    #Boost speed
+                    w.update()
+                    w.update()
+                if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:
+                    if(player.rightHand.isCompatible(w)):
+                        player.score += 1
+                        print("Score : ", player.score)
+                    else:
+                        player.score -= 1
+                        print("Score : ", player.score)
+                    wasteList.remove(w)
+        if type(w) == ComposedWaste:
+            if checkCollision(indexPos[0], indexPos[1], w):
+                createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
     return render
 
-
-
-
-
-def createWasteCatalog(WIDTH):
-    with open('wastes.csv', mode='r', encoding='utf-8') as file:
+def createWasteCatalog():
+    with open('CSV/wastes.csv', mode='r', encoding='utf-8') as file:
         csv_reader = csv.reader(file)
         l = list(csv_reader)
         wasteCatalog = []
         for line in l[1:]:
-            if line[5] == 'None':
-                wasteCatalog.append(Waste(line[0], line[1], line[4], "Textures/Waste/output.png"))
-            else:
-                if line[7] != 'None':     
-                    wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], "Textures/Waste/output2.png"))
-                elif line[7] == 'None' and line[6] != 'None':
-                    wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], "Textures/Waste/output2.png"))
+            if(len(line) > 0):
+                if line[5] == 'None':
+                    wasteCatalog.append(Waste(line[0], line[1], line[4], line[2]))
+                else:
+                    if line[7] != 'None':     
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2]))
+                    elif line[7] == 'None' and line[6] != 'None':
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2]))
     return wasteCatalog
-
 
 def main():
     EPSILON = 1
