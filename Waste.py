@@ -2,7 +2,7 @@ import WasteType
 import cv2
 from Graphics import Graphic, SceneRender
 class Waste:
-    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, size=150):
+    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, size=75):
         """
         Crée une instance de Waste
         Entrée : 
@@ -25,7 +25,6 @@ class Waste:
     
     def move(self, pos):
         self.position = pos
-        
     
     def get_graphic(self):
         return self.sprite

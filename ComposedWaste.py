@@ -4,7 +4,7 @@ from Graphics import Graphic, SceneRender
 from Waste import Waste
 class ComposedWaste:
 
-    def __init__(self, _name: str, _components, _speed, _sprite_path, size=150):
+    def __init__(self, _name: str, _components, _speed, _sprite_path, size=75):
         """
         Crée une instance de ComposedWaste
         Entrée :
