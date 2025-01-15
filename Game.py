@@ -11,6 +11,7 @@ from Bin import Bin
 from Menus import *
 from Player import Player
 from Direction import Direction
+from WasteType import WasteType
 import threading
 from WasteFall import *
 
@@ -46,10 +47,11 @@ class Game:
         hands = handSolution.Hands()
         render = SceneRender((self.WIDTH, self.HEIGHT))
         self.bins = {
-            "Recycling": Bin("Recycling", "recycling", self.HEIGHT),
-            "Compost": Bin("Compost", "compost", self.HEIGHT),
-            "Glass": Bin("Glass", "glass", self.HEIGHT),
-            "Default": Bin("Default", "default", self.HEIGHT)
+            "Recycling": Bin("Recycling", WasteType.Recycling, self.HEIGHT),
+            "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
+            "Glass": Bin("Glass", WasteType.Glass, self.HEIGHT),
+            "Default": Bin("Default", WasteType.NonRecycling, self.HEIGHT),
+            "Floor": Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
 
         wasteDefaultDelay = 2
