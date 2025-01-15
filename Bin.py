@@ -1,5 +1,7 @@
 from Graphics import Graphic
 import cv2
+from ComposedWaste import ComposedWaste
+
 class Bin:
     def __init__(self, _name, _type, _height):
         self.name = _name
@@ -25,7 +27,7 @@ class Bin:
         self.content.put(waste)
     
     def isCompatible(self, waste):
-        if isinstance(waste, ComposedWaste):
+        if type(waste) == ComposedWaste:
             return False
         else :
             return self.type == waste.type
