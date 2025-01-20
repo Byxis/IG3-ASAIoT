@@ -46,11 +46,6 @@ python main.py
 - [Lien Diagramme de Gant](https://docs.google.com/spreadsheets/d/1lN4seDiW93CPrhIQoiOF3anqnDFao1mGMybjAvzFJxA/)
 
 # Auteurs :
-- Alexis SERRANO : [Profil GitHub](https://github.com/Byxis)
-- Tom LEARDI : [Profil GitHub](https://github.com/SymetTr1x)
-- Sébastien PINTA : [Profil GitHub](https://github.com/Askneuh)
-- [![Lalala](<img src="[https://example.com/logo.png](https://avatars.githubusercontent.com/u/190523592?v=4)" alt="Logo" width="200" />)](https://github.com/SymetTr1x)
-
 <table>
   <tbody>
     <tr>
