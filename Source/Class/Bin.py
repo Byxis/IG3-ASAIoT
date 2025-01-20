@@ -1,5 +1,6 @@
 from Utils.Graphics import Graphic
 from Class.ComposedWaste import ComposedWaste
+from Enums.WasteType import WasteType
 
 import cv2
 import os
@@ -21,15 +22,16 @@ class Bin:
         self.type = _type
         self.content = []
         sprite = Graphic()
-        if _type == "recycling":
-            print(os.path.abspath("../Ressources/Textures/Bins/recycling.png"))
+        if _type == WasteType.Recycling:
             sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/recycling.png", cv2.IMREAD_UNCHANGED))
-        elif _type == "glass":
+        elif _type == WasteType.Glass:
             sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/glass.png", cv2.IMREAD_UNCHANGED))
-        elif _type == "default":
+        elif _type == WasteType.NonRecycling:
             sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/default.png", cv2.IMREAD_UNCHANGED))
-        elif _type == "compost":
+        elif _type == WasteType.Compost:
             sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/compost.png", cv2.IMREAD_UNCHANGED))
+        elif _type == WasteType.Floor:
+            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/default.png", cv2.IMREAD_UNCHANGED))
         size = 1
         self.sprite = sprite.resize((50*size, 75*size), interpolation=cv2.INTER_AREA)
         self.pos = [0,_height-50]
