@@ -1,7 +1,7 @@
-from scipy.spatial import distance
-from HandGesture import HandGesture
-from Direction import Direction
+from Enums.HandGesture import HandGesture
+from Enums.Direction import Direction
 
+from scipy.spatial import distance
 
 class Hand:
     def __init__(self, list):

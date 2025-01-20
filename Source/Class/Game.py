@@ -1,19 +1,19 @@
+from Utils.FPSCounter import FPSCounter
+from Enums.GameState import GameState
+from Enums.HandGesture import HandGesture
+from Utils.Graphics import Graphic, SceneRender
+from Enums.Direction import Direction
+from Class.Player import Player
+from Class.Menus import *
+from Class.WasteFall import *
+from Enums.WasteType import WasteType
+from Class.Hand import Hand
+from Class.Bin import Bin
+
 import cv2
 import numpy as np
-from FPSCounter import FPSCounter
-from GameState import GameState
 import mediapipe as mp
-from Hand import Hand
-from HandGesture import HandGesture
 from scipy.spatial import distance
-from Graphics import Graphic, SceneRender
-from Bin import Bin
-from Menus import *
-from Player import Player
-from Direction import Direction
-from WasteType import WasteType
-import threading
-from WasteFall import *
 
 class Game:
     def __init__(self, player):
@@ -27,37 +27,43 @@ class Game:
 
     def play(self):
         # Initialisation
-        self.EPSILON = 1
-        self.WIDTH =  int(480*12/9) # 640 
-        self.HEIGHT = 480 # 480
+        self.EPSILON = 1 # Waiting time for the next frame
+        self.WIDTH =  int(480*12/9) # Width of the window
+        self.HEIGHT = 480 # height of the window
 
-        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT)
+        # Creation of the window
         cv2.namedWindow("Jeu", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Jeu", self.WIDTH, self.HEIGHT)
         cv2.setUseOptimized(True)
         cv2.setNumThreads(4)
 
+        # Crreation of the webcam
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
         cap.set(cv2.CAP_PROP_FPS, 30)
 
-        fps = FPSCounter()
-        handSolution = mp.solutions.hands
-        hands = handSolution.Hands()
-        render = SceneRender((self.WIDTH, self.HEIGHT))
+        # Initialisation of all the objects needed
+        fps = FPSCounter() # FPS counter (to remove later)
+        handSolution = mp.solutions.hands # Solution for hand detection
+        hands = handSolution.Hands() # Hand detection object
+        render = SceneRender((self.WIDTH, self.HEIGHT)) # Render engine
         self.bins = {
-            "Recycling": Bin("Recycling", WasteType.Recycling, self.HEIGHT),
-            "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
-            "Glass": Bin("Glass", WasteType.Glass, self.HEIGHT),
-            "Default": Bin("Default", WasteType.NonRecycling, self.HEIGHT),
-            "Floor": Bin("Floor", WasteType.Floor, self.HEIGHT)
+            "Recycling": Bin("Recycling", "recycling", self.HEIGHT),
+            "Compost": Bin("Compost", "compost", self.HEIGHT),
+            "Glass": Bin("Glass", "glass", self.HEIGHT),
+            "Default": Bin("Default", "default", self.HEIGHT),
+            "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
+        
+        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT) # Creation of the menus
 
+        # Delay between waste spawn
         wasteDefaultDelay = 2
         wasteCurrentDelay = 0
         
-        wasteCatalog = createWasteCatalog()
+        # Creation of the waste catalog and current waste list
+        wasteCatalog = wasteCatalog.createWasteCatalog()
         wasteList = []
         
         while cap.isOpened():
@@ -65,6 +71,8 @@ class Game:
             ret, img = cap.read()
             if not ret:
                 break
+            
+            # Render and graphic initialization
             img = cv2.flip(img, 1)
             webcam = Graphic(img)
 
@@ -73,30 +81,25 @@ class Game:
 
             render.add_layer(webcam)
             
+            # Hand detection
             self.treatPicture(hands, img)
 
+            #Addind the index trace
             indexTrace = Graphic((self.WIDTH, self.HEIGHT))
-            self.updateGameState(render, img, Main, Pause, Play, End)
             for pos in self.indexPos:
                 indexTrace.draw_circle((pos[0], pos[1]), 2, (255, 0, 0), -1, alpha=pos[2])
                 pos[2] -= 0.1
                 if pos[2] <= 0:
                     self.indexPos.remove(pos)
-
-            # Alls Update
-            fps.update()
-
-            # Render Update
-            render.add_layer(indexTrace)
-
-            # Display
-            output = fps.display(output)
-
-            output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
             
+            # Alls Update
+            self.updateGameState(render, img, Main, Pause, Play, End)
+            fps.update()
             if self.gameState == GameState.Playing:
+                # Add bins to screen
                 self.renderBins(render)
                 
+                # Handle waste spawn and collision
                 size = len(wasteList)
                 indexPos = [-100, -100]
                 render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
@@ -104,10 +107,17 @@ class Game:
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
                     wasteCurrentDelay -= fps.dt*0.5
+
+
+            # Display / Render Update
+            render.add_layer(indexTrace)
+            output = fps.display(output)
+            output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
+        
             # Affichage du jeu
             cv2.imshow("Jeu", output)
 
-            # Temp : interruption du jeu
+            # Stoping the game if the user touch the button for, or press "q" or "esc" 
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
@@ -118,6 +128,23 @@ class Game:
         cv2.destroyAllWindows()
 
     def updateGameState(self, render, img, Main, Pause, Play, End):
+        """
+        Update the game state and the menus
+
+        Parameters:
+        - render : SceneRender
+            The render engine
+        - img : np.array
+            The image to treat
+        - Main : Menu
+            The main menu
+        - Pause : Menu
+            The pause menu
+        - Play : Menu
+            The play menu
+        - End : Menu
+            The end menu
+        """
         menu_map = {
             GameState.PauseMenu: Pause,
             GameState.Playing: Play,
@@ -135,27 +162,44 @@ class Game:
                         self.gameState = bu.click()
 
     def renderBins(self, render):
+        """
+        Add the bins to the render engine
+
+        Parameters:
+        - render : SceneRender
+            The render engine
+        """
         if self.player.leftHand:
             render.add_layer(self.player.leftHand.sprite, [self.player.leftHand.pos[0], self.player.leftHand.pos[1]])
         if self.player.rightHand:
             render.add_layer(self.player.rightHand.sprite, [self.player.rightHand.pos[0], self.player.rightHand.pos[1]])
 
     def treatPicture(self, hands, img):
+        """
+        Treat the picture to get the hand gesture and the mouse position
+
+        Parameters:
+        - hands : mediapipe.solutions.hands.Hands
+            The hand detection object
+        - img : np.array
+            The image to treat
+        """
         recHands = hands.process(img)
         if recHands.multi_hand_landmarks:
             for hand in recHands.multi_hand_landmarks:
                 handArticulations = []
+                # Get all the articulations of the hand
                 for datapoint_id, point in enumerate(hand.landmark):
                     h, w, c = img.shape
                     x, y = int(point.x * w), int(point.y * h)
                     handArticulations.append([x, y])
-
+                # Create a hand object
                 hand = Hand(handArticulations)
                 gesture = hand.getHandGesture()
                 x, y = hand.pos
 
                 bin = self.getBinForGesture(gesture)
-
+                # Change the bin of the player
                 if hand.getHandDirection() == Direction.LEFT and bin:
                     self.player.changeBin(Direction.LEFT, bin)
                     self.player.leftHand.pos = [x, self.HEIGHT - 75]
@@ -165,12 +209,16 @@ class Game:
                 else:
                     self.player.changeBin(hand.getHandDirection(), None)
 
+                # Temp: Display the gesture on the screen
                 cv2.putText(img, f"{gesture.name} ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
                 
+                # Creating the index trace and the mouse
                 if gesture == HandGesture.INDEX_RAISED:
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])
                     self.mouse = hand.index[3]
                     self.mouseCurrentDelay = self.mouseDelay
+
+        # Update the mouse position, if the mouse is not moving, the mouse is set to -100, -100            
         if(self.mouseCurrentDelay > 0):
             self.mouseCurrentDelay -= 0.1
             if self.mouseCurrentDelay <= 0:
