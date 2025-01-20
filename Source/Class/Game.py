@@ -49,10 +49,10 @@ class Game:
         hands = handSolution.Hands() # Hand detection object
         render = SceneRender((self.WIDTH, self.HEIGHT)) # Render engine
         self.bins = {
-            "Recycling": Bin("Recycling", "recycling", self.HEIGHT),
-            "Compost": Bin("Compost", "compost", self.HEIGHT),
-            "Glass": Bin("Glass", "glass", self.HEIGHT),
-            "Default": Bin("Default", "default", self.HEIGHT),
+            "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
+            "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
+            "Glass": Bin("Glass", WasteType.Glass, self.HEIGHT),
+            "Non Recycling": Bin("Non Recycling", WasteType.NonRecycling, self.HEIGHT),
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
@@ -63,7 +63,7 @@ class Game:
         wasteCurrentDelay = 0
         
         # Creation of the waste catalog and current waste list
-        wasteCatalog = wasteCatalog.createWasteCatalog()
+        wasteCatalog = createWasteCatalog()
         wasteList = []
         
         while cap.isOpened():
@@ -229,7 +229,7 @@ class Game:
         bin_map = {
             HandGesture.FIST_CLOSED: "Compost",
             HandGesture.HAND_OPEN: "Glass",
-            HandGesture.OK_SIGN: "Default",
+            HandGesture.OK_SIGN: "Non Recycling",
             HandGesture.ROCK_N_ROLL: "Recycling",
             HandGesture.NONE: None
         }
