@@ -6,6 +6,7 @@ from Enums.Direction import Direction
 from Class.Player import Player
 from Class.Menus import *
 from Class.WasteFall import *
+from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
 
@@ -51,9 +52,10 @@ class Game:
             "Recycling": Bin("Recycling", "recycling", self.HEIGHT),
             "Compost": Bin("Compost", "compost", self.HEIGHT),
             "Glass": Bin("Glass", "glass", self.HEIGHT),
-            "Default": Bin("Default", "default", self.HEIGHT)
-        } # Creation of the bins for the player
-
+            "Default": Bin("Default", "default", self.HEIGHT),
+            "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
+        }
+        
         Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT) # Creation of the menus
 
         # Delay between waste spawn
@@ -61,7 +63,7 @@ class Game:
         wasteCurrentDelay = 0
         
         # Creation of the waste catalog and current waste list
-        wasteCatalog = createWasteCatalog()
+        wasteCatalog = wasteCatalog.createWasteCatalog()
         wasteList = []
         
         while cap.isOpened():
