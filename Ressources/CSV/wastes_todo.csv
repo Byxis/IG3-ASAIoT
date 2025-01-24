@@ -1,0 +1,6 @@
+Name;Type;Location;Score;Speed;ComposedOf1;ComposedOf2;ComposedOf3;ComposedOf4;
+
+
+"Dead Leaves";Compost;"/Textures/Biodegradable/dead_leaves.png";10;2;;;;;
+
+"Jam Jar";Glass;"/Textures/Glass/jam_jar.png";10;2;;;;;
