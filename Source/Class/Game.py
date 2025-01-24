@@ -56,7 +56,10 @@ class Game:
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
-        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT) # Creation of the menus
+        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
+                                                 scores = [["10/10/1010/10/10/10","Sebastien",10000],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50],["10/10/1010/10/10/10","Tom",10],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50]],
+                                                 stats = [["NbWaste in right bin :",150],["Nb recycled wastes :",100],["1234567890AZERTYUIOPQSDFGHJKLMWXCVBN12345678"],["Nb non-recycled wastes :",100]],
+                                                player_score=1000)  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -66,7 +69,9 @@ class Game:
         wasteCatalog = createWasteCatalog()
         wasteList = []
         
+        player_score = 1000
         while cap.isOpened():
+            player_score += 1
             # Update image
             ret, img = cap.read()
             if not ret:
@@ -93,7 +98,7 @@ class Game:
                     self.indexPos.remove(pos)
             
             # Alls Update
-            self.updateGameState(render, img, Main, Pause, Play, End)
+            self.updateGameState(render, img, Main, Pause, Play, End, player_score)
             fps.update()
             if self.gameState == GameState.Playing:
                 # Add bins to screen
@@ -127,7 +132,7 @@ class Game:
 
         cv2.destroyAllWindows()
 
-    def updateGameState(self, render, img, Main, Pause, Play, End):
+    def updateGameState(self, render, img, Main, Pause, Play, End, player_score = 0):
         """
         Update the game state and the menus
 
@@ -155,6 +160,9 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
+            if menu == Play:
+                menu.change_score(player_score)
+                menu.show_score()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
