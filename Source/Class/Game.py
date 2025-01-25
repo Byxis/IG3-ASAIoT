@@ -126,6 +126,8 @@ class Game:
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
+            if key == ord("p"):
+                self.gameState = GameState.Playing
             
             if self.gameState == GameState.Stop:
                 break

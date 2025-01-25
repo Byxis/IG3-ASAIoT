@@ -2,6 +2,7 @@ from Utils.Graphics import Graphic
 from Class.Button import Button
 from Class.Frame import Frame
 from Enums.GameState import GameState
+import os
 
 class Menu:
     def __init__(self, name: str = "Guest", buttons: list = None, frames: list = None, player_score:int = None, WIDTH=400, HEIGHT=300):
@@ -49,7 +50,8 @@ class Menu:
         return self.caneva.get_image()
     
     def show_score(self):
-        self.caneva.draw_text(text = "Score : "+str(self.player_score), position= (round(self.WIDTH/2), round(self.HEIGHT/20)), font_path = 'Hollster.ttf', font_size = round((((self.WIDTH/64*len("Score : "+str(self.player_score)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
+        self.caneva.draw_text(text = "Score : "+str(self.player_score), position= (round(self.WIDTH/2), round(self.HEIGHT/20)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Score : "+str(self.player_score)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
     
     def change_score(self, player_score):
         self.player_score = player_score

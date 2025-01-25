@@ -28,6 +28,7 @@ class Button:
         self.x2 = x1 + width
         self.y2 = y1 + height
         self.color = color
+        self.color2 = tuple(color[len(color)-1-i] for i in range(len(color)))
         self.action = action
 
     def isClicked(self, pos_x=-1, pos_y=-1):
@@ -68,5 +69,5 @@ class Button:
         font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
         
         caneva.draw_rectangle((self.x1, self.y1), (self.x2, self.y2), self.color, 3)
-        caneva.draw_text(self.name, (((self.x1+self.x2)/2-(len(self.name))), ((self.y1+self.y2)/2-(len(self.name)))), font_path, 30, self.color, 3, center = True)
+        caneva.draw_text(self.name, (((self.x1+self.x2)/2-(len(self.name))), ((self.y1+self.y2)/2-(len(self.name)))), font_path, 30, self.color2, 3, center = True)
   

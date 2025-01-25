@@ -30,12 +30,12 @@ class Waste:
         if self.sprite_path is None or not os.path.exists(self.sprite_path):
             raise FileNotFoundError(f"Image for bin type {_type} not found at path: {self.sprite_path}")
         
-        sprite = cv2.imread(self.sprite_path, cv2.IMREAD_UNCHANGED)
-        if sprite is None:
+        self.sprite = cv2.imread(self.sprite_path, cv2.IMREAD_UNCHANGED)
+        if self.sprite is None:
             raise FileNotFoundError(f"Failed to load image for bin type {_type} from path: {self.sprite_path}")
               
-        graphic_sprite = Graphic(sprite)
-        graphic_sprite.resize((size, size), cv2.INTER_NEAREST)
+        self.sprite = Graphic(self.sprite)
+        self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.radius = size/2
     
     def update(self):
