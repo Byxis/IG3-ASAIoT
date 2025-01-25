@@ -73,8 +73,8 @@ def create_Menu_Main(WIDTH, HEIGHT, scores):
     - HEIGHT : int
         the height of the screen
     """
-    Play = Button("Play", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
-    Quit = Button("Exit", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_quit)
+    Play = Button("Play", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,255,0), action=button_play)
+    Quit = Button("Exit", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,0,255), action=button_quit)
     buttons = [Play, Quit]
     LbFrame = Frame("Leaderboard",scores[:5], round(5.9*WIDTH/8), round((0.95*HEIGHT/2)-HEIGHT/11), round(2*WIDTH/8), round(HEIGHT/2))
     frames = [LbFrame]
@@ -92,8 +92,8 @@ def create_Menu_Pause(WIDTH, HEIGHT):
     - HEIGHT : int
         the height of the screen
     """
-    Resume = Button("Resume", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_play)
-    Quit = Button("Quit", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), button_main)
+    Resume = Button("Resume", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,255,0), action=button_play)
+    Quit = Button("Quit", 10, round(4*HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,0,255), action=button_main)
     buttons = [Resume, Quit]
     Pause = Menu("Pause", buttons)
     Pause.draw_menu()
@@ -109,7 +109,7 @@ def create_Menu_Play(WIDTH, HEIGHT, player_score):
     - HEIGHT : int
         the height of the screen
     """
-    Pause = Button("PAUSE", round(6.9*WIDTH/8), 10, round(WIDTH/8), round(HEIGHT/6), (0,255,255), button_pause)
+    Pause = Button("PAUSE", round(6.9*WIDTH/8), 10, round(WIDTH/8), round(HEIGHT/6), color=(0,255,255), action=button_pause)
     buttons = [Pause]
     Play = Menu("Play", buttons=buttons, player_score=player_score, WIDTH=WIDTH, HEIGHT=HEIGHT)
     Play.draw_menu()
@@ -125,8 +125,8 @@ def create_Menu_End(WIDTH, HEIGHT, scores, stats):
     - HEIGHT : int
         the height of the screen
     """
-    Restart = Button("RESTART", round(5.9*WIDTH/8), round(HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), (0,255,0), button_play)
-    Main = Button("MAIN", round(5.9*WIDTH/8), round(4*HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), (0,0,255), button_main)
+    Restart = Button("RESTART", round(5.9*WIDTH/8), round(HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), color=(0,255,0), action=button_play)
+    Main = Button("MAIN", round(5.9*WIDTH/8), round(4*HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), color=(0,0,255), action=button_main)
     buttons = [Restart, Main]
     LbFrame = Frame("Leaderboard",scores[:5], 10, round(HEIGHT/6), round(2*WIDTH/8), round(4*HEIGHT/6))
     StatFrame = Frame("Statistics",stats, round(2*WIDTH/6), round(HEIGHT/2), round(2*WIDTH/6), round(0.95*HEIGHT/2))

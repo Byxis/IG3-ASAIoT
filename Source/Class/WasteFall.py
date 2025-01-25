@@ -7,6 +7,7 @@ from Class.Waste import Waste
 from random import randint
 from copy import copy
 import csv
+import os
 
 def getRandomPosition(WIDTH, wasteList):
     """
@@ -203,15 +204,15 @@ def createWasteCatalog():
     - [Waste]
         the list of all the possible wastes
     """
-    with open('../Ressources/CSV/wastes.csv', mode='r', encoding='utf-8') as file:
-        csv_reader = csv.reader(file)
+    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'CSV', 'wastes.csv'))
+        
+    with open(csv_path, mode='r', encoding='utf-8') as file:
+        csv_reader = csv.reader(file, delimiter=';')
         l = list(csv_reader)
         wasteCatalog = []
         for line in l[1:]:
             if(len(line) > 0):
                 if line[5] == 'None':
-                    print(line[1])
-                    print(WasteType[line[1]])
                     wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2]))
                 else:
                     if line[7] != 'None':     

@@ -1,7 +1,8 @@
+import os
 from Utils.Graphics import Graphic, SceneRender
 
 class Button:
-    def __init__(self, name: str, x1, y1, width, height, action=None):
+    def __init__(self, name: str, x1, y1, width, height, color = (255,255,255), action=None):
         """
         Create a Button instance
 
@@ -26,6 +27,7 @@ class Button:
         self.height = height
         self.x2 = x1 + width
         self.y2 = y1 + height
+        self.color = color
         self.action = action
 
     def isClicked(self, pos_x=-1, pos_y=-1):
@@ -63,6 +65,8 @@ class Button:
         - caneva : Graphic
             the caneva to draw on
         """
-        caneva.draw_rectangle((self.x1, self.y1), (self.x2, self.y2), (200, 200, 200), 3)
-        caneva.draw_text(self.name, (((self.x1+self.x2)/2-(len(self.name))), ((self.y1+self.y2)/2-(len(self.name)))), '../Ressources/Fonts/Hollster.ttf', 30   , (200, 200, 200), 3, center = True)
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
+        
+        caneva.draw_rectangle((self.x1, self.y1), (self.x2, self.y2), self.color, 3)
+        caneva.draw_text(self.name, (((self.x1+self.x2)/2-(len(self.name))), ((self.y1+self.y2)/2-(len(self.name)))), font_path, 30, self.color, 3, center = True)
   
