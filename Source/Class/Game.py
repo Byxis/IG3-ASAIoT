@@ -59,7 +59,7 @@ class Game:
         Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
                                                  scores = [["10/10/1010/10/10/10","Sebastien",10000],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50],["10/10/1010/10/10/10","Tom",10],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50]],
                                                  stats = [["NbWaste in right bin :",150],["Nb recycled wastes :",100],["1234567890AZERTYUIOPQSDFGHJKLMWXCVBN12345678"],["Nb non-recycled wastes :",100]],
-                                                player_score=1000)  # Creation of the menus
+                                                player_score=0)  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -69,9 +69,7 @@ class Game:
         wasteCatalog = createWasteCatalog()
         wasteList = []
         
-        player_score = 1000
         while cap.isOpened():
-            player_score += 1
             # Update image
             ret, img = cap.read()
             if not ret:
@@ -98,7 +96,7 @@ class Game:
                     self.indexPos.remove(pos)
             
             # Alls Update
-            self.updateGameState(render, img, Main, Pause, Play, End, player_score)
+            self.updateGameState(render, img, Main, Pause, Play, End, self.player.score)
             fps.update()
             if self.gameState == GameState.Playing:
                 # Add bins to screen
