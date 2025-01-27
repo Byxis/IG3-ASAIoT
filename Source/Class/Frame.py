@@ -31,3 +31,5 @@ class Frame:
                 score_text += " "
             caneva.draw_text(score_text, (round((self.x1+self.x2)/2+5), round(self.y1+(i+3)*(self.height/11))), font_path, round((((2.9*self.width/len(str(score)))**2+((1.3*self.height)/len(str(score)))**2)**0.5)*1.2), (200, 200, 200), 3, center = True)
   
+    def reset_loadedlist(self, loadedliste):
+        self.loadedlist = loadedliste

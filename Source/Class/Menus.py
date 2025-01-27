@@ -59,10 +59,13 @@ class Menu:
         self.caneva.draw_text(text = "Lives : "+str(self.player_lives), position= (round(self.WIDTH/8), round(self.HEIGHT/20)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Lives : "+str(self.player_lives)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
     
     def change_score(self, player_score):
-        self.player_score = player_score
+        self.player_score = round(player_score)
         
     def change_lives(self, player_lives):
         self.player_lives = player_lives
+        
+    def change_loadedliste(self, frame, loadedlist):
+        frame.reset_loadedlist(loadedlist)
     
     def clear_menu(self):
         self.caneva.reset_image()
