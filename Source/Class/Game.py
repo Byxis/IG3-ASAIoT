@@ -197,7 +197,6 @@ class Game:
             if menu == Play:            
                 menu.reset_menu()
                 if not self.raspberryApi.isLoaded:
-                    print("Raspberry not connected")
                     menu.change_score(player_score)
                     menu.show_score()
                 menu.change_lives(player_lives)    
