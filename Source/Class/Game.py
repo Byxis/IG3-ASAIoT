@@ -261,7 +261,15 @@ class Game:
 
                 match gesture:
                     case HandGesture.INDEX_RAISED:
-                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
+                    case HandGesture.FIST_CLOSED:
+                        cv2.putText(img, f"Compost", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (102, 51, 0), 2, cv2.LINE_AA)
+                    case HandGesture.HAND_OPEN:
+                        cv2.putText(img, f"Glass", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 204, 255), 2, cv2.LINE_AA)
+                    case HandGesture.OK_SIGN:
+                        cv2.putText(img, f"Non Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 50, 50), 2, cv2.LINE_AA)
+                    case HandGesture.ROCK_N_ROLL:
+                        cv2.putText(img, f"Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
 
                 # Creating the index trace and the mouse
                 if gesture == HandGesture.INDEX_RAISED:
