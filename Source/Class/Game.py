@@ -156,7 +156,7 @@ class Game:
                 self.gameState = GameState.EndMenu
                 self.resetAll()
             
-            if self.gameState == GameState.MainMenu:
+            if self.gameState == GameState.MainMenu and not self.isResetted():
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
@@ -194,11 +194,12 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
-            if menu == Play and not self.raspberryApi.isLoaded:
-                menu.change_score(player_score)
+            if menu == Play:
+                if not self.raspberryApi.isLoaded:
+                    menu.change_score(player_score)
+                    menu.show_score()
                 menu.change_lives(player_lives)                
                 menu.reset_menu()
-                menu.show_score()
                 menu.show_lives()
             if menu == End:
                 menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
@@ -279,11 +280,11 @@ class Game:
 
                 match gesture:
                     case HandGesture.INDEX_RAISED:
-                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
                     case HandGesture.FIST_CLOSED:
-                        cv2.putText(img, f"Compost", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (102, 51, 0), 2, cv2.LINE_AA)
+                        cv2.putText(img, f"Compost", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 51, 102), 2, cv2.LINE_AA)
                     case HandGesture.HAND_OPEN:
-                        cv2.putText(img, f"Glass", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 204, 255), 2, cv2.LINE_AA)
+                        cv2.putText(img, f"Glass", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 204, 0), 2, cv2.LINE_AA)
                     case HandGesture.OK_SIGN:
                         cv2.putText(img, f"Non Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 50, 50), 2, cv2.LINE_AA)
                     case HandGesture.ROCK_N_ROLL:
@@ -329,6 +330,16 @@ class Game:
         }
         self.player.leftHand = None
         self.player.rightHand = None
+    
+    def isResetted(self):
+        """
+        Check if the game is resetted
+
+        Returns:
+        - bool
+            True if the game is resetted, False otherwise
+        """
+        return self.player.score == 0 and self.player.lives == 3 and len(self.activewasteList) == 0 and len(self.wasteList) == 0
 
 if __name__ == "__main__":
     game = Game("Joueur")
