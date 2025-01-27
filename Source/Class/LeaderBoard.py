@@ -21,7 +21,7 @@ class LeaderBoard:
             csv_reader = csv.reader(file)
             lines = list(csv_reader)
             sorted_lines = sorted(lines[1:], key= lambda x: x[2], reverse=True)
-            firstTen = sorted_lines[:min(10,len(sorted_lines)-1)]
+            firstTen = sorted_lines[:min(10,len(sorted_lines))]
             for elt in firstTen:
                 elt[0] = elt[0][0:10]
         return firstTen
