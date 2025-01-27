@@ -220,6 +220,7 @@ class Game:
         """
         recHands = hands.process(img)
         if recHands.multi_hand_landmarks:
+            hand_positions = []
             for hand in recHands.multi_hand_landmarks:
                 handArticulations = []
                 # Get all the articulations of the hand
@@ -228,7 +229,23 @@ class Game:
                     x, y = int(point.x * w), int(point.y * h)
                     handArticulations.append([x, y])
                 # Create a hand object
-                hand = Hand(handArticulations)
+                hand_obj = Hand(handArticulations)
+                hand_positions.append(hand_obj)
+
+            # Filter out hands that are too close to each other
+            filtered_hands = []
+            for i, hand1 in enumerate(hand_positions):
+                too_close = False
+                for j, hand2 in enumerate(hand_positions):
+                    if i != j:
+                        distance = np.linalg.norm(np.array(hand1.pos) - np.array(hand2.pos))
+                        if distance < 50:  # Threshold distance
+                            too_close = True
+                            break
+                if not too_close:
+                    filtered_hands.append(hand1)
+
+            for hand in filtered_hands:
                 gesture = hand.getHandGesture()
                 x, y = hand.pos
 
@@ -244,8 +261,11 @@ class Game:
                     self.player.changeBin(hand.getHandDirection(), None)
 
                 # Temp: Display the gesture on the screen
-                cv2.putText(img, f"{gesture.name} ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
-                
+
+                match gesture:
+                    case HandGesture.INDEX_RAISED:
+                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+
                 # Creating the index trace and the mouse
                 if gesture == HandGesture.INDEX_RAISED:
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])

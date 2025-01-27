@@ -201,6 +201,7 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
         if type(w) == ComposedWaste:
             # Check if the hand is colliding with the waste
             if checkCollision(indexPos[0], indexPos[1], w):
+                addScore(player, w, raspberryApi)
                 createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
     return render
 
@@ -231,10 +232,10 @@ def createWasteCatalog():
         for line in l[1:]:
             if(len(line) > 0):
                 if line[5] == 'None':
-                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2]))
+                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2], float(line[3])))
                 else:
                     if line[7] != 'None':     
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2], float(line[3])))
                     elif line[7] == 'None' and line[6] != 'None':
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2], float(line[3])))
     return wasteCatalog

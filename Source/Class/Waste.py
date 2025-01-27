@@ -5,7 +5,7 @@ import cv2
 import os
 
 class Waste:
-    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, size=75):
+    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, _score: int, size=75):
         """
         Create a Waste instance
 
@@ -37,7 +37,7 @@ class Waste:
         self.sprite = Graphic(self.sprite)
         self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.radius = size/2
-        self.score = 1
+        self.score = _score
     
     def update(self):
         """
