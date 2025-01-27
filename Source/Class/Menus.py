@@ -5,7 +5,7 @@ from Enums.GameState import GameState
 import os
 
 class Menu:
-    def __init__(self, name: str = "Guest", buttons: list = None, frames: list = None, player_score:int = None, WIDTH=400, HEIGHT=300):
+    def __init__(self, name: str = "Guest", buttons: list = None, frames: list = None, player_score:int = None, player_lives:int = None, WIDTH=400, HEIGHT=300):
         """
         Create a Menu instance
 
@@ -26,6 +26,7 @@ class Menu:
         self.caneva = Graphic((WIDTH, HEIGHT))
         self.frames = frames
         self.player_score = player_score
+        self.player_lives =player_lives
 
     def draw_menu(self):
         """
@@ -53,9 +54,15 @@ class Menu:
         font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
         self.caneva.draw_text(text = "Score : "+str(self.player_score), position= (round(self.WIDTH/2), round(self.HEIGHT/20)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Score : "+str(self.player_score)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
     
+    def show_lives(self):
+        font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
+        self.caneva.draw_text(text = "Lives : "+str(self.player_lives), position= (10, round(self.HEIGHT/10)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Lives : "+str(self.player_lives)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
+    
     def change_score(self, player_score):
         self.player_score = player_score
-        self.reset_menu()
+        
+    def change_lives(self, player_lives):
+        self.player_lives = player_lives
     
     def clear_menu(self):
         self.caneva.reset_image()
@@ -101,7 +108,7 @@ def create_Menu_Pause(WIDTH, HEIGHT):
     Pause.draw_menu()
     return Pause
 
-def create_Menu_Play(WIDTH, HEIGHT, player_score):
+def create_Menu_Play(WIDTH, HEIGHT, player_score, player_lives):
     """
     Create the play menu
 
@@ -113,7 +120,7 @@ def create_Menu_Play(WIDTH, HEIGHT, player_score):
     """
     Pause = Button("PAUSE", x1=round(6.9*WIDTH/8), y1=10, width=round(WIDTH/8), height=round(HEIGHT/6), color=(0,255,255), action=button_pause)
     buttons = [Pause]
-    Play = Menu("Play", buttons=buttons, player_score=player_score, WIDTH=WIDTH, HEIGHT=HEIGHT)
+    Play = Menu("Play", buttons=buttons, player_score=player_score, player_lives=player_lives, WIDTH=WIDTH, HEIGHT=HEIGHT)
     Play.draw_menu()
     return Play
 
@@ -137,7 +144,7 @@ def create_Menu_End(WIDTH, HEIGHT, scores, stats):
     End.draw_menu()
     return End
 
-def create_Menu_All(WIDTH, HEIGHT, scores, stats, player_score):
+def create_Menu_All(WIDTH, HEIGHT, scores, stats, player_score, player_lives):
     """
     Create all the menus
 
@@ -149,7 +156,7 @@ def create_Menu_All(WIDTH, HEIGHT, scores, stats, player_score):
     """
     Main = create_Menu_Main(WIDTH, HEIGHT, scores)
     Pause = create_Menu_Pause(WIDTH, HEIGHT)
-    Play = create_Menu_Play(WIDTH, HEIGHT, player_score)
+    Play = create_Menu_Play(WIDTH, HEIGHT, player_score, player_lives)
     End = create_Menu_End(WIDTH, HEIGHT, scores, stats)
     return Main, Pause, Play, End
 

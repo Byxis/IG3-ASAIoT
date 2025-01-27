@@ -64,7 +64,8 @@ class Game:
         Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
                                                  scores = L.loadTenFirst(),
                                                  stats = S.getAllStats(),
-                                                 player_score=0)  # Creation of the menus
+                                                 player_score=0,
+                                                 player_lives=0)  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -101,7 +102,7 @@ class Game:
                     self.indexPos.remove(pos)
             
             # Alls Update
-            self.updateGameState(render, img, Main, Pause, Play, End, self.player.score)
+            self.updateGameState(render, img, Main, Pause, Play, End, self.player.score, self.player.lives)
             fps.update()
             if self.gameState == GameState.Playing:
                 # Add bins to screen
@@ -141,7 +142,7 @@ class Game:
 
         cv2.destroyAllWindows()
 
-    def updateGameState(self, render, img, Main, Pause, Play, End, player_score = 0):
+    def updateGameState(self, render, img, Main, Pause, Play, End, player_score = 0, player_lives = 0):
         """
         Update the game state and the menus
 
@@ -170,7 +171,10 @@ class Game:
         if menu:
             if menu == Play:
                 menu.change_score(player_score)
+                menu.change_lives(player_lives)                
+                menu.reset_menu()
                 menu.show_score()
+                menu.show_lives()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
