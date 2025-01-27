@@ -92,28 +92,67 @@ def testConnection():
     try:
         response = requests.get(BASE_URL + "/test")
         re = response.json()
-        _send_dweet("{\"R\": 255, \"G\": 255, \"B\": 255, \"text\": \"Connection OK\"}", BASE_URL)
+        test = {
+            "R": 255,
+            "G": 255,
+            "B": 255,
+            "text": "Connection OK"
+        }
+        _send_dweet(test, url = "/display-text")
         return True
     except Exception as e:
         return False
 
 def publishCurrentScore(score : int):
-    _send_dweet("{\"R\": 255, \"G\": 100, \"B\": 50, \"text\": \"Score : "+score+"}", BASE_URL)
+    score = {
+        "R": 255,
+        "G": 100,
+        "B": 50,
+        "text": "Score : "+str(score)
+    }
+    url = "/display-text"
+    _send_dweet(score, url)
 
 def publishAddScore(score : int, added : int):
-    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    score1 = {
+        "R": 0,
+        "G": 255,
+        "B": 0,
+        "text": "Score : "+str(score+added)+" + "+str(added)
+    }
+    score2 = {
+        "R": 0,
+        "G": 255,
+        "B": 0,
+        "text": "Score : "+str(score+added)+" + "+str(added)
+    }
+    url = "/display-text"
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
     publishCurrentScore(score) 
 
-def publishAddScore(score : int, removed : int):
-    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 5, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 5, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
-    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+def publishRemScore(score : int, removed : int):
+    score1 = {
+        "R": 255,
+        "G": 0,
+        "B": 0,
+        "text": "Score : "+str(score-removed)+" - "+str(removed)
+    }
+    score2 = {
+        "R": 255,
+        "G": 0,
+        "B": 0,
+        "text": "Score : "+str(score-removed)+" - "+str(removed)
+    }
+    url = "/display-text"
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
     publishCurrentScore(score) 
 
 
