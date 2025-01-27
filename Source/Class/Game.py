@@ -24,7 +24,7 @@ from scipy.spatial import distance
 class Game:
     def __init__(self, player):
         self.player = Player(player)
-        self.activeWasteList = []
+        self.activewasteList = []
         self.gameState = GameState.MainMenu
         self.indexPos = []
         self.mouse = [-100, -100]
@@ -79,7 +79,8 @@ class Game:
             self.WIDTH, self.HEIGHT,
             scores = L.loadTenFirst(),
             stats = S.getAllStats(),
-            player_score=0
+            player_score=0,
+            player_lives=3
         )  # Creation of the menus
 
         # Delay between waste spawn
@@ -88,7 +89,7 @@ class Game:
         
         # Creation of the waste catalog and current waste list
         wasteCatalog = createWasteCatalog()
-        wasteList = []
+        self.wasteList = []
         
         while cap.isOpened():
             # Update image
@@ -123,10 +124,10 @@ class Game:
                 # Add bins to screen
                 self.renderBins(render)
                 # Handle waste spawn and collision
-                size = len(wasteList)
+                size = len(self.wasteList)
                 indexPos = [-100, -100]
-                render, self.player.lives = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
-                if size < len(wasteList):
+                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
+                if size < len(self.wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
                     wasteCurrentDelay -= fps.dt*0.5
@@ -308,7 +309,8 @@ class Game:
         """
         self.player.score = 0
         self.player.lives = 3
-        self.activeWasteList = []
+        self.activewasteList = []
+        self.wasteList = []
         self.bins = {
             "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
             "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
@@ -316,6 +318,8 @@ class Game:
             "Non Recycling": Bin("Non Recycling", WasteType.NonRecycling, self.HEIGHT),
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
+        self.player.leftHand = None
+        self.player.rightHand = None
 
 if __name__ == "__main__":
     game = Game("Joueur")
