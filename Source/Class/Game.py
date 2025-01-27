@@ -152,6 +152,7 @@ class Game:
 
             if self.player.lives <= 0:
                 self.S = Stats(self.bins)
+                self.L.addAndSave(self.player.name, self.player.score)
                 End.reset_menu()
                 self.gameState = GameState.EndMenu
                 self.resetAll()
@@ -160,7 +161,6 @@ class Game:
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
-                self.L.addAndSave(self.player.name, self.player.score)
                 break
                 
 
@@ -204,6 +204,9 @@ class Game:
             if menu == End:
                 menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
                 menu.frames[1].reset_loadedlist(self.S.getAllStats())
+                menu.reset_menu()
+            if menu == Main:
+                menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
                 menu.reset_menu()
             render.add_layer(menu.show_menu())
 
