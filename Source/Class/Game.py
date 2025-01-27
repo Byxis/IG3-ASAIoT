@@ -148,7 +148,7 @@ class Game:
                 break
 
             if key == ord("e"):
-                self.gameState = GameState.EndMenu  
+                self.gameState = GameState.EndMenu
 
             if self.player.lives <= 0:
                 self.gameState = GameState.EndMenu

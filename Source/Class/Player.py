@@ -11,8 +11,8 @@ class Player:
             the name of the player
         """
         self.name = n
-        self.score = 0
-        self.lives = 3
+        self.score : int = 0
+        self.lives :int = 3
         self.leftHand = None
         self.rightHand = None
 
@@ -29,7 +29,7 @@ class Player:
             the new player's score
         """
         self.score += p
-        return self.score
+        return round(self.score)
     
     def changeBin(self, direction, bin):
         """
