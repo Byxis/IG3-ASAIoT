@@ -7,7 +7,7 @@ import requests
 
 # base url for all requests
 # Think about modifying the URL to use Raspberry IP address and Raspberry open port
-BASE_URL = "http://127.0.0.1:3000"
+BASE_URL = "http://192.168352.136:3000"
 # Something like: "http://192.168.12.83:3000"
 
 
@@ -84,6 +84,37 @@ def delete_all_dweets_for(thing_name):
     """
     return _request('delete', '/delete/dweets/for/{0}'.format(thing_name), params=None, session=None)
 
+def actualizeUrl(url):
+    global BASE_URL
+    BASE_URL = url
+
+def testConnection():
+    try:
+        response = requests.get(BASE_URL + "/test")
+        re = response.json()
+        _send_dweet("{\"R\": 255, \"G\": 255, \"B\": 255, \"text\": \"Connection OK\"}", BASE_URL)
+        return True
+    except Exception as e:
+        return False
+
+def publishCurrentScore(score : int):
+    _send_dweet("{\"R\": 255, \"G\": 100, \"B\": 50, \"text\": \"Score : "+score+"}", BASE_URL)
+
+def publishAddScore(score : int, added : int):
+    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 0, \"G\": 255, \"B\": 0, \"text\": \"Score : "+score+" + "+added+"\"}", BASE_URL)
+    publishCurrentScore(score) 
+
+def publishAddScore(score : int, removed : int):
+    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 5, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 5, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+    _send_dweet("{\"R\": 255, \"G\": 0, \"B\": 0, \"text\": \"Score : "+score+" - "+removed+"\"}", BASE_URL)
+    publishCurrentScore(score) 
 
 
 
