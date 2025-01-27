@@ -101,15 +101,9 @@ class RaspberryAPI:
     def testConnection(self):
         print("Testing connection")
         try:
-            send = {
-                "R": 0,
-                "G": 255,
-                "B": 255,
-                "text": "Connection OK"
-            }
-            url = "/display-text"
-            self._send_dweet(send, url)
-            print("Connection OK")
+            response = requests.get(self.BASE_URL)
+            if response.status_code == 200:
+                print("Connection successful")
             return True
         except Exception as e:
             print("Failed to test connection:", e)
@@ -162,6 +156,15 @@ class RaspberryAPI:
         url = "/display-text"
         self.showAdded(score, score1, score2, url)
 
+    def showConnected(self):
+        send = {
+            "R": 0,
+            "G": 255,
+            "B": 255,
+            "text": "Connection established"
+        }
+        url = "/display-text"
+        self._send_dweet(send, url)
 """
 def main():
     def test_post_single_dweet():

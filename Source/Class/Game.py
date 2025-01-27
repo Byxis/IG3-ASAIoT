@@ -40,6 +40,8 @@ class Game:
             answer = input("Do you want to continue with a Raspberry ? If yes, please connect the Raspberry and type the url. If no,type 'enter' : ")
             if answer != "":
                 self.raspberryApi.actualizeUrl(answer)
+        if(self.raspberryApi.isLoaded):
+            self.raspberryApi.showConnected()
 
         # Creation of the window
         cv2.namedWindow("Jeu", cv2.WINDOW_NORMAL)
