@@ -173,7 +173,7 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                     w.update()
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
-                    if(player.rightHand.isCompatible(w)):
+                    if(player.leftHand.isCompatible(w)):
                         player.score += 1
                     else:
                         player.score -= 1
