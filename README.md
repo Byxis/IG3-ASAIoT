@@ -34,7 +34,7 @@ A la fin de la partie, un leaderboard apparaît, et des statistiques sur notre r
   - `scipy`
   - `mediapipe`
   - `numpy`
- 
+  - `requests`
 # Installation
 
 Clonez ce dépôt sur votre machine locale :
@@ -43,7 +43,17 @@ Clonez ce dépôt sur votre machine locale :
    cd recycle-w4r
   ```
 ## Ou
-Environnement virtuel (A faire)
+Environnement virtuel (Prérequis : avoir Conda) : clonez le dépot (voir plus haut), puis sur votre terminal :  
+```bash
+conda env create -f environment.yml
+```
+Sur VsCode : Ctrl - Shift - P : Python:Select Interpreter et choisir l'environnement du projet.  
+Si vous avez l'erreur : no module 'requests', tapez manuellement dans votre terminale la commande  
+```bash
+conda install -c conda-forge requests
+```
+Si vous etes avec Conda.  
+Cela devrait fonctionner.  
 # Utilisation
 
 Lancez le jeu avec la commande suivante :
