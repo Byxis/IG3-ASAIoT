@@ -68,7 +68,7 @@ class Stats:
 
     def WrongSortingPercentage(self):
         total_waste = self.getTotalWasteInBins()
-        total_wrong = self.getTotalWrongSortingNumber()
+        total_wrong = total_waste - self.getTotalCorrectSortingNumber()
         if total_waste == 0:
             return 0
         else:
@@ -77,9 +77,7 @@ class Stats:
     def getAllStats(self):
         return [
             ["Dechets bien tries :", self.getTotalCorrectSortingNumber()],
-            ["Dechets mal tries :", self.getTotalWrongSortingNumber()],
-            ["Dechets tombes au sol :", self.getMissedWasteNumber()],
             ["Pourcentage de dechets bien tries :", self.getCorrectSortingPercentage()],
-            ["Pourcentage de dechets mal tries :", self.WrongSortingPercentage()],
+            ["Pourcentage de dechets non tries :", self.WrongSortingPercentage()],
             ["Nombre total de dechets :", self.getTotalWasteInBins()]        
         ]

@@ -129,7 +129,7 @@ def createWastesFromSlice(WIDTH, wasteList, compWaste, wasteCatalog):
                 wasteList.append(waste)
                 break
 
-def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player, raspberryApi):
+def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player, raspberryApi, bins):
     """
     Update all the wastes in the list, and handle the collision with the hands
 
@@ -169,6 +169,7 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
             wasteList.remove(w)
             player.score -= 1
             player.lives -= 1
+            bins["Floor"].addWasteToBin(w)
         if type(w) == Waste:
             if player.leftHand != None:
                 # Check if the waste is compatible with the hand, and if the hand is close enough to the waste

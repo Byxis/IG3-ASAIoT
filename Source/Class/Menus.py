@@ -63,9 +63,6 @@ class Menu:
         
     def change_lives(self, player_lives):
         self.player_lives = player_lives
-        
-    def change_loadedliste(self, frame, loadedlist):
-        frame.reset_loadedlist(loadedlist)
     
     def clear_menu(self):
         self.caneva.reset_image()

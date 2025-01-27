@@ -72,13 +72,13 @@ class Game:
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
-        L = LeaderBoard()
-        S = Stats(self.bins)
+        self.L = LeaderBoard()
+        self.S = Stats(self.bins)
         
         Main, Pause, Play, End = create_Menu_All(
             self.WIDTH, self.HEIGHT,
-            scores = L.loadTenFirst(),
-            stats = S.getAllStats(),
+            scores = self.L.loadTenFirst(),
+            stats = self.S.getAllStats(),
             player_score=0,
             player_lives=3
         )  # Creation of the menus
@@ -126,7 +126,7 @@ class Game:
                 # Handle waste spawn and collision
                 size = len(self.wasteList)
                 indexPos = [-100, -100]
-                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
+                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi, self.bins)
                 if size < len(self.wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
@@ -151,7 +151,8 @@ class Game:
                 self.gameState = GameState.EndMenu
 
             if self.player.lives <= 0:
-                S = Stats(self.bins)
+                self.S = Stats(self.bins)
+                End.reset_menu()
                 self.gameState = GameState.EndMenu
                 self.resetAll()
             
@@ -159,7 +160,7 @@ class Game:
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
-                L.addAndSave(self.player.name, self.player.score)
+                self.L.addAndSave(self.player.name, self.player.score)
                 break
                 
 
@@ -200,6 +201,10 @@ class Game:
                 menu.change_lives(player_lives)                
                 menu.reset_menu()
                 menu.show_lives()
+            if menu == End:
+                menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
+                menu.frames[1].reset_loadedlist(self.S.getAllStats())
+                menu.reset_menu()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
