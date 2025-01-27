@@ -110,7 +110,6 @@ class Game:
                 size = len(wasteList)
                 indexPos = [-100, -100]
                 render, self.player.lives = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
-                print(self.player.lives)
                 if size < len(wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
