@@ -75,10 +75,12 @@ class Game:
         L = LeaderBoard()
         S = Stats(self.bins)
         
-        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
-                                                 scores = L.loadTenFirst(),
-                                                 stats = S.getAllStats(),
-                                                 player_score=0)  # Creation of the menus
+        Main, Pause, Play, End = create_Menu_All(
+            self.WIDTH, self.HEIGHT,
+            scores = L.loadTenFirst(),
+            stats = S.getAllStats(),
+            player_score=0
+        )  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -148,6 +150,7 @@ class Game:
 
             if self.player.lives <= 0:
                 self.gameState = GameState.EndMenu
+                self.resetAll()
 
             if self.gameState == GameState.Stop:
                 L.addAndSave(self.player.name, self.player.score)
@@ -293,6 +296,21 @@ class Game:
             HandGesture.NONE: None
         }
         return self.bins.get(bin_map.get(gesture, None), None)
+
+    def resetAll(self):
+        """
+        Reset all the game variables
+        """
+        self.player.score = 0
+        self.player.lives = 3
+        self.activeWasteList = []
+        self.bins = {
+            "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
+            "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
+            "Glass": Bin("Glass", WasteType.Glass, self.HEIGHT),
+            "Non Recycling": Bin("Non Recycling", WasteType.NonRecycling, self.HEIGHT),
+            "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
+        }
 
 if __name__ == "__main__":
     game = Game("Joueur")
