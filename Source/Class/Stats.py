@@ -74,6 +74,18 @@ class Stats:
         else:
             return total_wrong/total_waste * 100
 
+    def getAllStats(self):
+        return [
+            ["Nombre de déchets correctement triés :", self.getTotalCorrectSortingNumber()],
+            ["Nombre de déchets mal triés :", self.getTotalWrongSortingNumber()],
+            ["Nombre de déchets tombés au sol :", self.getMissedWasteNumber()],
+            ["Pourcentage de déchets correctement triés :", self.getCorrectSortingPercentage()],
+            ["Pourcentage de déchets mal triés :", self.WrongSortingPercentage()],
+            ["Nombre de déchets correctement triés par poubelle :", self.getCorrectWasteNumberForEachBin()],
+            ["Nombre de déchets mal triés par poubelle :", self.getWrongWasteNumberForEachBin()],
+            ["Nombre total de déchets :", self.getTotalWasteInBins()]        
+        ]
+    
 bins = {
     "Recycling": Bin("Recycling", WasteType.Recycling, 480),
     "Compost": Bin("Compost", WasteType.Compost, 480),
