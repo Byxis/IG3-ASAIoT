@@ -1,6 +1,10 @@
+import subprocess
 from Enums.WasteType import WasteType
+
 from Utils.FPSCounter import FPSCounter
 from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import *
+
 from Class.ComposedWaste import ComposedWaste
 from Class.Waste import Waste
 
@@ -8,6 +12,7 @@ from random import randint
 from copy import copy
 import csv
 import os
+import asyncio
 
 def getRandomPosition(WIDTH, wasteList):
     """
@@ -124,7 +129,7 @@ def createWastesFromSlice(WIDTH, wasteList, compWaste, wasteCatalog):
                 wasteList.append(waste)
                 break
 
-def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player):
+def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player, raspberryApi):
     """
     Update all the wastes in the list, and handle the collision with the hands
 
@@ -160,8 +165,8 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
         w.update()
         # Remove the waste if it's out of the screen
         if w.position[1] > HEIGHT - w.radius:
+            remScore(player, w, raspberryApi)
             wasteList.remove(w)
-            player.score -= 1
         if type(w) == Waste:
             if player.leftHand != None:
                 # Check if the waste is compatible with the hand, and if the hand is close enough to the waste
@@ -173,10 +178,10 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                     w.update()
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
-                    if(player.rightHand.isCompatible(w)):
-                        player.score += 1
+                    if(player.leftHand.isCompatible(w)):
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
+                        remScore(player, w, raspberryApi)
                     wasteList.remove(w)
             
             if player.rightHand != None:
@@ -189,15 +194,25 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
 
                 if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:
                     if(player.rightHand.isCompatible(w)):
-                        player.score += 1
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
+                        remScore(player, w, raspberryApi)
                     wasteList.remove(w)
         if type(w) == ComposedWaste:
             # Check if the hand is colliding with the waste
             if checkCollision(indexPos[0], indexPos[1], w):
                 createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
     return render
+
+def addScore(player, waste, raspberryApi):
+    player.score += waste.score
+    if raspberryApi.isLoaded:
+        raspberryApi.publishAddScore(player.score, waste.score)
+
+def remScore(player, waste, raspberryApi):
+    player.score -= waste.score // 2
+    if raspberryApi.isLoaded:
+        raspberryApi.publishRemScore(player.score, waste.score)
 
 def createWasteCatalog():
     """

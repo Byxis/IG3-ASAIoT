@@ -37,6 +37,7 @@ class Waste:
         self.sprite = Graphic(self.sprite)
         self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.radius = size/2
+        self.score = 1
     
     def update(self):
         """

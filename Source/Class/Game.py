@@ -1,12 +1,16 @@
-from Utils.FPSCounter import FPSCounter
+
 from Enums.GameState import GameState
 from Enums.HandGesture import HandGesture
-from Utils.Graphics import Graphic, SceneRender
 from Enums.Direction import Direction
+from Enums.WasteType import WasteType
+
+from Utils.FPSCounter import FPSCounter
+from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import RaspberryAPI
+
 from Class.Player import Player
 from Class.Menus import *
 from Class.WasteFall import *
-from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
 
@@ -24,12 +28,18 @@ class Game:
         self.mouse = [-100, -100]
         self.mouseDelay = 0.5
         self.mouseCurrentDelay = 0
+        self.raspberryApi = RaspberryAPI()
 
     def play(self):
         # Initialisation
         self.EPSILON = 1 # Waiting time for the next frame
         self.WIDTH =  int(480*12/9) # Width of the window
         self.HEIGHT = 480 # height of the window
+
+        if(not self.raspberryApi.isLoaded):
+            answer = input("Do you want to continue with a Raspberry ? If yes, please connect the Raspberry and type the url. If no,type 'enter' : ")
+            if answer != "":
+                self.raspberryApi.actualizeUrl(answer)
 
         # Creation of the window
         cv2.namedWindow("Jeu", cv2.WINDOW_NORMAL)
@@ -48,6 +58,8 @@ class Game:
         handSolution = mp.solutions.hands # Solution for hand detection
         hands = handSolution.Hands() # Hand detection object
         render = SceneRender((self.WIDTH, self.HEIGHT)) # Render engine
+
+        # Creation of the bins
         self.bins = {
             "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
             "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
@@ -55,11 +67,28 @@ class Game:
             "Non Recycling": Bin("Non Recycling", WasteType.NonRecycling, self.HEIGHT),
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
-        
-        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
-                                                 scores = [["10/10/1010/10/10/10","Sebastien",10000],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50],["10/10/1010/10/10/10","Tom",10],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50]],
-                                                 stats = [["NbWaste in right bin :",150],["Nb recycled wastes :",100],["1234567890AZERTYUIOPQSDFGHJKLMWXCVBN12345678"],["Nb non-recycled wastes :",100]],
-                                                player_score=0)  # Creation of the menus
+
+        # Creation of the menus
+        Main, Pause, Play, End = create_Menu_All(
+            self.WIDTH, self.HEIGHT,
+            scores = [["10/10/1010/10/10/10","Sebastien",10000],
+                      ["10/10/1010/10/10/10","Tom",20],
+                      ["10/10/1010/10/10/10","Tom",30],
+                      ["10/10/1010/10/10/10","Tom",40], 
+                      ["10/10/1010/10/10/10","Tom",50],
+                      ["10/10/1010/10/10/10","Tom",10],
+                      ["10/10/1010/10/10/10","Tom",20],
+                      ["10/10/1010/10/10/10","Tom",30],
+                      ["10/10/1010/10/10/10","Tom",40], 
+                      ["10/10/1010/10/10/10","Tom", 50]
+                    ],
+            stats = [
+                ["NbWaste in right bin :",150],
+                ["Nb recycled wastes :",100],
+                ["1234567890AZERTYUIOPQSDFGHJKLMWXCVBN12345678"],
+                ["Nb non-recycled wastes :",100]],
+            player_score=0
+        )  
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -105,7 +134,7 @@ class Game:
                 # Handle waste spawn and collision
                 size = len(wasteList)
                 indexPos = [-100, -100]
-                render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
+                render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
                 if size < len(wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
@@ -157,14 +186,14 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
-            if menu == Play:
+            if menu == Play and self.raspberryApi.isLoaded:
                 menu.change_score(player_score)
                 menu.show_score()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
-                    if bu.isClicked(self.mouse[0], self.mouse[1]):
-                        self.gameState = bu.click()
+                if bu.isClicked(self.mouse[0], self.mouse[1]):
+                    self.gameState = bu.click()
 
     def renderBins(self, render):
         """
