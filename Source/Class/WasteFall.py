@@ -167,6 +167,8 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
         if w.position[1] > HEIGHT - w.radius:
             remScore(player, w, raspberryApi)
             wasteList.remove(w)
+            player.score -= 1
+            player.lives -= 1
         if type(w) == Waste:
             if player.leftHand != None:
                 # Check if the waste is compatible with the hand, and if the hand is close enough to the waste
@@ -182,7 +184,9 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                         addScore(player, w, raspberryApi)
                     else:
                         remScore(player, w, raspberryApi)
+                        player.lives -= 1
                     wasteList.remove(w)
+                    player.leftHand.addWasteToBin(w)
             
             if player.rightHand != None:
                 if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 30**2 :
@@ -197,13 +201,15 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                         addScore(player, w, raspberryApi)
                     else:
                         remScore(player, w, raspberryApi)
+                        player.lives -= 1
                     wasteList.remove(w)
+                    player.rightHand.addWasteToBin(w)
         if type(w) == ComposedWaste:
             # Check if the hand is colliding with the waste
             if checkCollision(indexPos[0], indexPos[1], w):
                 addScore(player, w, raspberryApi)
                 createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
-    return render
+    return render, player.lives
 
 def addScore(player, waste, raspberryApi):
     player.score += waste.score
