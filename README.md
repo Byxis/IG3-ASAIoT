@@ -1,4 +1,5 @@
 # RECYCLE W4R - AR Edition
+<<<<<<< HEAD
 Jeu réalisé dans le cadre d'un projet IG3 Image&Interaction, à Polytech Montpellier.  
 
 RECYCLE W4R - AR Edition est un jeu de recyclage de type ”fruit basket”. Différents déchets tombent du haut de
@@ -13,6 +14,10 @@ Chaque déchet collecté ajoute des points de score, et se tromper nous en fait 
 enlève une vie. Le joueur a de base 3 vies et peut potentiellement en regagner grâce à des bonus.  
 
 A la fin de la partie, un leaderboard apparaît, et des statistiques sur notre recyclage apparaissent.
+=======
+Jeu réalisé dans le cadre d'un projet IG3 Image&Interaction, à Polytech Montpellier.
+Dans RECYCLE W4R - AR Edition, les joueurs ....
+>>>>>>> 216caffec37b8308dd56b592e23352657e44c52b
 
 
 # Prérequis
@@ -62,7 +67,11 @@ python main.py
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%">
+<<<<<<< HEAD
         <a href="https://github.com/Byxis">
+=======
+        <a href="https://kentcdodds.com">
+>>>>>>> 216caffec37b8308dd56b592e23352657e44c52b
           <img src="https://avatars.githubusercontent.com/u/35427808?v=4" width="100px;" alt="Alexis"/>
           <br />
           <sub>
@@ -71,12 +80,21 @@ python main.py
           </sub>
         </a>
         <br />
+<<<<<<< HEAD
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=Byxis" title="Commits">Commits</a>
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3AByxis" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
          <td align="center" valign="top" width="14.28%">
         <a href="https://github.com/SymetTr1x">
           <img src="https://avatars.githubusercontent.com/u/190523592?v=4" width="100px;" alt="Tom"/>
+=======
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Commits">Commits</a>
+        <br />
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
+         <td align="center" valign="top" width="14.28%">
+        <a href="https://kentcdodds.com">
+          <img src="https://avatars.githubusercontent.com/u/190523592?v=4" width="100px;" alt="Alexis"/>
+>>>>>>> 216caffec37b8308dd56b592e23352657e44c52b
           <br />
           <sub>
             <b>Tom Leardi</b>
@@ -84,12 +102,21 @@ python main.py
           </sub>
         </a>
         <br />
+<<<<<<< HEAD
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=SymetTr1x" title="Commits">Commits</a>
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3ASymetTr1x" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
          <td align="center" valign="top" width="14.28%">
         <a href="https://github.com/Askneuh">
           <img src="https://avatars.githubusercontent.com/u/81713112?v=4" width="100px;" alt="Seb"/>
+=======
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Commits">Commits</a>
+        <br />
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
+         <td align="center" valign="top" width="14.28%">
+        <a href="https://kentcdodds.com">
+          <img src="https://avatars.githubusercontent.com/u/81713112?v=4" width="100px;" alt="Alexis"/>
+>>>>>>> 216caffec37b8308dd56b592e23352657e44c52b
           <br />
           <sub>
             <b>Sébastien Pinta</b>
@@ -97,9 +124,15 @@ python main.py
           </sub>
         </a>
         <br />
+<<<<<<< HEAD
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=Askneuh" title="Commits">Commits</a>
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3AAskneuh+" title="Reviewed Pull Requests">Reviewed Pull Requests</a>        
+=======
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Commits">Commits</a>
+        <br />
+        <a href="https://github.com/all-contributors/all-contributors/commits?author=kentcdodds" title="Reviewed Pull Requests">Reviewed Pull Requests</a>        
+>>>>>>> 216caffec37b8308dd56b592e23352657e44c52b
     </tr>
   </tbody>
 </table>
