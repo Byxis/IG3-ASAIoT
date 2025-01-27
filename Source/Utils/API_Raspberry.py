@@ -11,7 +11,6 @@ class RaspberryAPI:
 
     def __init__(self):
         self.isLoaded = False
-        self.actualizeUrl("http://192.168.52.136:3000")
 
     def _request(self, method, url, session=None, **kwargs):
         """Make HTTP request, raising an exception if it fails.

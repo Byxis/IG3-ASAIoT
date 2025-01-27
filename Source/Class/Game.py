@@ -151,7 +151,12 @@ class Game:
                 self.gameState = GameState.EndMenu  
 
             if self.player.lives <= 0:
+                S = Stats(self.bins)
+                End.reset_menu()
                 self.gameState = GameState.EndMenu
+                self.resetAll()
+            
+            if self.gameState == GameState.MainMenu:
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
@@ -189,7 +194,7 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
-            if menu == Play and self.raspberryApi.isLoaded:
+            if menu == Play and not self.raspberryApi.isLoaded:
                 menu.change_score(player_score)
                 menu.change_lives(player_lives)                
                 menu.reset_menu()

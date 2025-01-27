@@ -100,7 +100,7 @@ def checkCollision(x, y, waste):
     - bool
         True if the point is colliding with the waste, False otherwise
     """
-    if waste.position[0] <= x <= waste.position[0] + waste.radius*2 and waste.position[1] <= y <= waste.position[1] + waste.radius*2:
+    if waste.position[0] - waste.radius <= x <= waste.position[0] + waste.radius and waste.position[1] - waste.radius <= y <= waste.position[1] + waste.radius:
         return True
     return False
 
