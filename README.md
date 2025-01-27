@@ -73,7 +73,7 @@ python main.py
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=Byxis" title="Commits">Commits</a>
         <br />
-        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3AByxis" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
+        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+reviewed-by%3AByxis+" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
          <td align="center" valign="top" width="14.28%">
         <a href="https://github.com/SymetTr1x">
           <img src="https://avatars.githubusercontent.com/u/190523592?v=4" width="100px;" alt="Tom"/>
@@ -86,7 +86,7 @@ python main.py
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=SymetTr1x" title="Commits">Commits</a>
         <br />
-        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3ASymetTr1x" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
+        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+reviewed-by%3ASymetTr1X+" title="Reviewed Pull Requests">Reviewed Pull Requests</a>
          <td align="center" valign="top" width="14.28%">
         <a href="https://github.com/Askneuh">
           <img src="https://avatars.githubusercontent.com/u/81713112?v=4" width="100px;" alt="Seb"/>
@@ -99,7 +99,7 @@ python main.py
         <br />
         <a href="https://github.com/Byxis/IG3-ASAIoT/commits/?author=Askneuh" title="Commits">Commits</a>
         <br />
-        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+author%3AAskneuh+" title="Reviewed Pull Requests">Reviewed Pull Requests</a>        
+        <a href="https://github.com/Byxis/IG3-ASAIoT/pulls?q=is%3Apr+reviewed-by%3AAskneuh+" title="Reviewed Pull Requests">Reviewed Pull Requests</a>        
     </tr>
   </tbody>
 </table>
