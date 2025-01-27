@@ -32,7 +32,7 @@ class Stats:
                 countW += 1
             elif type(waste) == ComposedWaste:
                 countCW += 1
-        return countW, countCW
+        return countW + countCW
     
     def getCorrectWasteNumberForEachBin(self):
         stat_dic = {}
@@ -76,20 +76,10 @@ class Stats:
 
     def getAllStats(self):
         return [
-            ["Nombre de déchets correctement triés :", self.getTotalCorrectSortingNumber()],
-            ["Nombre de déchets mal triés :", self.getTotalWrongSortingNumber()],
-            ["Nombre de déchets tombés au sol :", self.getMissedWasteNumber()],
-            ["Pourcentage de déchets correctement triés :", self.getCorrectSortingPercentage()],
-            ["Pourcentage de déchets mal triés :", self.WrongSortingPercentage()],
-            ["Nombre de déchets correctement triés par poubelle :", self.getCorrectWasteNumberForEachBin()],
-            ["Nombre de déchets mal triés par poubelle :", self.getWrongWasteNumberForEachBin()],
-            ["Nombre total de déchets :", self.getTotalWasteInBins()]        
+            ["Dechets bien tries :", self.getTotalCorrectSortingNumber()],
+            ["Dechets mal tries :", self.getTotalWrongSortingNumber()],
+            ["Dechets tombes au sol :", self.getMissedWasteNumber()],
+            ["Pourcentage de dechets bien tries :", self.getCorrectSortingPercentage()],
+            ["Pourcentage de dechets mal tries :", self.WrongSortingPercentage()],
+            ["Nombre total de dechets :", self.getTotalWasteInBins()]        
         ]
-    
-bins = {
-    "Recycling": Bin("Recycling", WasteType.Recycling, 480),
-    "Compost": Bin("Compost", WasteType.Compost, 480),
-    "Glass": Bin("Glass", WasteType.Glass, 480),
-    "Default": Bin("Default", WasteType.NonRecycling, 480),
-    "Floor": Bin("Floor", WasteType.Floor, 480)
-}

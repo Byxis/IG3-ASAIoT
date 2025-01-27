@@ -10,6 +10,7 @@ from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
 from Class.LeaderBoard import LeaderBoard
+from Class.Stats import Stats
 
 import cv2
 import numpy as np
@@ -58,11 +59,11 @@ class Game:
         }
         
         L = LeaderBoard()
-        
+        S = Stats(self.bins)
         
         Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
                                                  scores = L.loadTenFirst(),
-                                                 stats = L.loadTenFirst(),
+                                                 stats = S.getAllStats(),
                                                  player_score=0)  # Creation of the menus
 
         # Delay between waste spawn
