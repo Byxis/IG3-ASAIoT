@@ -20,9 +20,6 @@ class LeaderBoard:
         with open(self.scores_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
             lines = list(csv_reader)
-            print(lines)
-            print(lines[1:])
-            print(lines[1:][2])
             sorted_lines = sorted(lines[1:], key= lambda x: int(x[2]), reverse=True)
             firstTen = sorted_lines[:min(10,len(sorted_lines)-1)]
             for elt in firstTen:

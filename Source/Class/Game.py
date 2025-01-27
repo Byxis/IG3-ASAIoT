@@ -164,7 +164,6 @@ class Game:
 
         menu = menu_map.get(self.gameState, None)
         if menu:
-            render.add_layer(img)
             if menu == Play:
                 menu.change_score(player_score)
                 menu.show_score()
