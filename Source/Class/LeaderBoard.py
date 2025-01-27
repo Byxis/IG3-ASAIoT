@@ -20,7 +20,7 @@ class LeaderBoard:
         with open(self.scores_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
             lines = list(csv_reader)
-            sorted_lines = sorted(lines[1:], key= lambda x: int(x[2]), reverse=True)
+            sorted_lines = sorted(lines[1:], key= lambda x: x[2], reverse=True)
             firstTen = sorted_lines[:min(10,len(sorted_lines)-1)]
             for elt in firstTen:
                 elt[0] = elt[0][0:10]
@@ -38,4 +38,4 @@ class LeaderBoard:
         """
         with open(self.scores_path, mode='a', encoding='utf-8', newline='') as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow([datetime.now(), player_name, score])
+            csv_writer.writerow([datetime.now(), player_name, round(score)])
