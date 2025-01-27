@@ -7,7 +7,7 @@ import requests
 
 # base url for all requests
 # Think about modifying the URL to use Raspberry IP address and Raspberry open port
-BASE_URL = "http://192.168.352.136:3000"
+BASE_URL = "http://192.168.52.136:3000"
 # Something like: "http://192.168.12.83:3000"
 
 
