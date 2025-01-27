@@ -168,6 +168,9 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
                 if player.leftHand.isCompatible(w) and (player.leftHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
                     w.update()
+                    w.update()
+                    w.update()
+                    w.update()
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
                     if(player.rightHand.isCompatible(w)):
@@ -180,6 +183,9 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
             if player.rightHand != None:
                 if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
+                    w.update()
+                    w.update()
+                    w.update()
                     w.update()
 
                 if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:

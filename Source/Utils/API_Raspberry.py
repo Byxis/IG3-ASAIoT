@@ -7,7 +7,7 @@ import requests
 
 # base url for all requests
 # Think about modifying the URL to use Raspberry IP address and Raspberry open port
-BASE_URL = "http://127.0.0.1:3000"
+BASE_URL = "http://192.168.52.136:3000"
 # Something like: "http://192.168.12.83:3000"
 
 
@@ -84,6 +84,76 @@ def delete_all_dweets_for(thing_name):
     """
     return _request('delete', '/delete/dweets/for/{0}'.format(thing_name), params=None, session=None)
 
+def actualizeUrl(url):
+    global BASE_URL
+    BASE_URL = url
+
+def testConnection():
+    try:
+        response = requests.get(BASE_URL + "/test")
+        re = response.json()
+        test = {
+            "R": 255,
+            "G": 255,
+            "B": 255,
+            "text": "Connection OK"
+        }
+        _send_dweet(test, url = "/display-text")
+        return True
+    except Exception as e:
+        return False
+
+def publishCurrentScore(score : int):
+    score = {
+        "R": 255,
+        "G": 100,
+        "B": 50,
+        "text": "Score : "+str(score)
+    }
+    url = "/display-text"
+    _send_dweet(score, url)
+
+def publishAddScore(score : int, added : int):
+    score1 = {
+        "R": 0,
+        "G": 255,
+        "B": 0,
+        "text": "Score : "+str(score+added)+" + "+str(added)
+    }
+    score2 = {
+        "R": 0,
+        "G": 255,
+        "B": 0,
+        "text": "Score : "+str(score+added)+" + "+str(added)
+    }
+    url = "/display-text"
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    publishCurrentScore(score) 
+
+def publishRemScore(score : int, removed : int):
+    score1 = {
+        "R": 255,
+        "G": 0,
+        "B": 0,
+        "text": "Score : "+str(score-removed)+" - "+str(removed)
+    }
+    score2 = {
+        "R": 255,
+        "G": 0,
+        "B": 0,
+        "text": "Score : "+str(score-removed)+" - "+str(removed)
+    }
+    url = "/display-text"
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    _send_dweet(score2, url)
+    _send_dweet(score1, url)
+    publishCurrentScore(score) 
 
 
 
