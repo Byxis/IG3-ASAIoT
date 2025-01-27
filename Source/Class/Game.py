@@ -1,12 +1,16 @@
-from Utils.FPSCounter import FPSCounter
+
 from Enums.GameState import GameState
 from Enums.HandGesture import HandGesture
-from Utils.Graphics import Graphic, SceneRender
 from Enums.Direction import Direction
+from Enums.WasteType import WasteType
+
+from Utils.FPSCounter import FPSCounter
+from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import RaspberryAPI
+
 from Class.Player import Player
 from Class.Menus import *
 from Class.WasteFall import *
-from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
 from Class.LeaderBoard import LeaderBoard
@@ -26,12 +30,20 @@ class Game:
         self.mouse = [-100, -100]
         self.mouseDelay = 0.5
         self.mouseCurrentDelay = 0
+        self.raspberryApi = RaspberryAPI()
 
     def play(self):
         # Initialisation
         self.EPSILON = 1 # Waiting time for the next frame
         self.WIDTH =  int(480*12/9) # Width of the window
         self.HEIGHT = 480 # height of the window
+
+        if(not self.raspberryApi.isLoaded):
+            answer = input("Do you want to continue with a Raspberry ? If yes, please connect the Raspberry and type the url. If no,type 'enter' : ")
+            if answer != "":
+                self.raspberryApi.actualizeUrl(answer)
+        if(self.raspberryApi.isLoaded):
+            self.raspberryApi.showConnected()
 
         # Creation of the window
         cv2.namedWindow("Jeu", cv2.WINDOW_NORMAL)
@@ -50,6 +62,8 @@ class Game:
         handSolution = mp.solutions.hands # Solution for hand detection
         hands = handSolution.Hands() # Hand detection object
         render = SceneRender((self.WIDTH, self.HEIGHT)) # Render engine
+
+        # Creation of the bins
         self.bins = {
             "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
             "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
@@ -109,7 +123,7 @@ class Game:
                 # Handle waste spawn and collision
                 size = len(wasteList)
                 indexPos = [-100, -100]
-                render, self.player.lives = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
+                render, self.player.lives = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
                 if size < len(wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
@@ -168,14 +182,15 @@ class Game:
 
         menu = menu_map.get(self.gameState, None)
         if menu:
-            if menu == Play:
+            render.add_layer(img)
+            if menu == Play and self.raspberryApi.isLoaded:
                 menu.change_score(player_score)
                 menu.show_score()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
-                    if bu.isClicked(self.mouse[0], self.mouse[1]):
-                        self.gameState = bu.click()
+                if bu.isClicked(self.mouse[0], self.mouse[1]):
+                    self.gameState = bu.click()
 
     def renderBins(self, render):
         """
@@ -202,6 +217,7 @@ class Game:
         """
         recHands = hands.process(img)
         if recHands.multi_hand_landmarks:
+            hand_positions = []
             for hand in recHands.multi_hand_landmarks:
                 handArticulations = []
                 # Get all the articulations of the hand
@@ -210,7 +226,23 @@ class Game:
                     x, y = int(point.x * w), int(point.y * h)
                     handArticulations.append([x, y])
                 # Create a hand object
-                hand = Hand(handArticulations)
+                hand_obj = Hand(handArticulations)
+                hand_positions.append(hand_obj)
+
+            # Filter out hands that are too close to each other
+            filtered_hands = []
+            for i, hand1 in enumerate(hand_positions):
+                too_close = False
+                for j, hand2 in enumerate(hand_positions):
+                    if i != j:
+                        distance = np.linalg.norm(np.array(hand1.pos) - np.array(hand2.pos))
+                        if distance < 50:  # Threshold distance
+                            too_close = True
+                            break
+                if not too_close:
+                    filtered_hands.append(hand1)
+
+            for hand in filtered_hands:
                 gesture = hand.getHandGesture()
                 x, y = hand.pos
 
@@ -226,8 +258,19 @@ class Game:
                     self.player.changeBin(hand.getHandDirection(), None)
 
                 # Temp: Display the gesture on the screen
-                cv2.putText(img, f"{gesture.name} ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
-                
+
+                match gesture:
+                    case HandGesture.INDEX_RAISED:
+                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2, cv2.LINE_AA)
+                    case HandGesture.FIST_CLOSED:
+                        cv2.putText(img, f"Compost", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (102, 51, 0), 2, cv2.LINE_AA)
+                    case HandGesture.HAND_OPEN:
+                        cv2.putText(img, f"Glass", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 204, 255), 2, cv2.LINE_AA)
+                    case HandGesture.OK_SIGN:
+                        cv2.putText(img, f"Non Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 50, 50), 2, cv2.LINE_AA)
+                    case HandGesture.ROCK_N_ROLL:
+                        cv2.putText(img, f"Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+
                 # Creating the index trace and the mouse
                 if gesture == HandGesture.INDEX_RAISED:
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])

@@ -1,6 +1,10 @@
+import subprocess
 from Enums.WasteType import WasteType
+
 from Utils.FPSCounter import FPSCounter
 from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import *
+
 from Class.ComposedWaste import ComposedWaste
 from Class.Waste import Waste
 
@@ -8,6 +12,7 @@ from random import randint
 from copy import copy
 import csv
 import os
+import asyncio
 
 def getRandomPosition(WIDTH, wasteList):
     """
@@ -124,7 +129,7 @@ def createWastesFromSlice(WIDTH, wasteList, compWaste, wasteCatalog):
                 wasteList.append(waste)
                 break
 
-def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player):
+def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player, raspberryApi):
     """
     Update all the wastes in the list, and handle the collision with the hands
 
@@ -160,6 +165,7 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
         w.update()
         # Remove the waste if it's out of the screen
         if w.position[1] > HEIGHT - w.radius:
+            remScore(player, w, raspberryApi)
             wasteList.remove(w)
             player.score -= 1
             player.lives -= 1
@@ -175,9 +181,9 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
                     if(player.leftHand.isCompatible(w)):
-                        player.score += 1
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
+                        remScore(player, w, raspberryApi)
                         player.lives -= 1
                     wasteList.remove(w)
                     player.leftHand.addWasteToBin(w)
@@ -192,17 +198,28 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
 
                 if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:
                     if(player.rightHand.isCompatible(w)):
-                        player.score += 1
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
+                        remScore(player, w, raspberryApi)
                         player.lives -= 1
                     wasteList.remove(w)
                     player.rightHand.addWasteToBin(w)
         if type(w) == ComposedWaste:
             # Check if the hand is colliding with the waste
             if checkCollision(indexPos[0], indexPos[1], w):
+                addScore(player, w, raspberryApi)
                 createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
     return render, player.lives
+
+def addScore(player, waste, raspberryApi):
+    player.score += waste.score
+    if raspberryApi.isLoaded:
+        raspberryApi.publishAddScore(player.score, waste.score)
+
+def remScore(player, waste, raspberryApi):
+    player.score -= waste.score // 2
+    if raspberryApi.isLoaded:
+        raspberryApi.publishRemScore(player.score, waste.score)
 
 def createWasteCatalog():
     """
@@ -221,10 +238,10 @@ def createWasteCatalog():
         for line in l[1:]:
             if(len(line) > 0):
                 if line[5] == 'None':
-                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2]))
+                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2], float(line[3])))
                 else:
                     if line[7] != 'None':     
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2], float(line[3])))
                     elif line[7] == 'None' and line[6] != 'None':
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2], float(line[3])))
     return wasteCatalog

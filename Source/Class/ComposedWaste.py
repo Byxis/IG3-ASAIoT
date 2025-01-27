@@ -5,7 +5,7 @@ import os
 
 class ComposedWaste:
 
-    def __init__(self, _name: str, _components, _speed, _sprite_path, size=75):
+    def __init__(self, _name: str, _components, _speed, _sprite_path, _score, size=75):
         """
         Create a ComposedWaste instance
 
@@ -39,6 +39,7 @@ class ComposedWaste:
         self.speed = _speed
         self.isSliced = False
         self.position = [0, 0]
+        self.score = _score
 
     def slice(self):
         """
