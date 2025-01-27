@@ -66,7 +66,7 @@ class Bin:
         - waste : Waste
             the waste to add to the bin
         """
-        self.content.put(waste)
+        self.content.append(waste)
     
     def isCompatible(self, waste):
         """

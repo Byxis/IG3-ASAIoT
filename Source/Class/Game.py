@@ -101,11 +101,12 @@ class Game:
             if self.gameState == GameState.Playing:
                 # Add bins to screen
                 self.renderBins(render)
-                
+                img = cv2.putText(img, f"Vies : {self.player.lives}", (self.WIDTH - 100, self.HEIGHT - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 # Handle waste spawn and collision
                 size = len(wasteList)
                 indexPos = [-100, -100]
-                render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
+                render, self.player.lives = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
+                print(self.player.lives)
                 if size < len(wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
@@ -124,6 +125,8 @@ class Game:
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
+            if self.player.lives <= 0:
+                self.gameState = GameState.EndMenu
             if self.gameState == GameState.Stop:
                 break
 
