@@ -9,6 +9,7 @@ from Class.WasteFall import *
 from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
+from Class.LeaderBoard import LeaderBoard
 
 import cv2
 import numpy as np
@@ -56,10 +57,13 @@ class Game:
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
+        L = LeaderBoard()
+        
+        
         Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT,
-                                                 scores = [["10/10/1010/10/10/10","Sebastien",10000],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50],["10/10/1010/10/10/10","Tom",10],["10/10/1010/10/10/10","Tom",20],["10/10/1010/10/10/10","Tom",30],["10/10/1010/10/10/10","Tom",40], ["10/10/1010/10/10/10","Tom", 50]],
-                                                 stats = [["NbWaste in right bin :",150],["Nb recycled wastes :",100],["1234567890AZERTYUIOPQSDFGHJKLMWXCVBN12345678"],["Nb non-recycled wastes :",100]],
-                                                player_score=0)  # Creation of the menus
+                                                 scores = L.loadTenFirst(),
+                                                 stats = L.loadTenFirst(),
+                                                 player_score=0)  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -124,7 +128,10 @@ class Game:
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
+            if key == ord("e"):
+                self.gameState = GameState.EndMenu  
             if self.gameState == GameState.Stop:
+                L.addAndSave(self.player.name, self.player.score)
                 break
 
         cv2.destroyAllWindows()

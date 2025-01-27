@@ -78,7 +78,7 @@ def create_Menu_Main(WIDTH, HEIGHT, scores):
     Play = Button("Play", 10, round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,255,0), action=button_play)
     Quit = Button("Exit", round(6.9*WIDTH/8), round(HEIGHT/6), round(WIDTH/8), round(HEIGHT/6), color=(0,0,255), action=button_quit)
     buttons = [Play, Quit]
-    LbFrame = Frame("Leaderboard",scores[:5], round(5.9*WIDTH/8), round((0.95*HEIGHT/2)-HEIGHT/11), round(2*WIDTH/8), round(HEIGHT/2))
+    LbFrame = Frame("Leaderboard",scores, round(5.9*WIDTH/8), round((0.95*HEIGHT/2)-HEIGHT/11), round(2*WIDTH/8), round(HEIGHT/2))
     frames = [LbFrame]
     Main = Menu("Main", buttons=buttons, frames=frames, WIDTH=WIDTH, HEIGHT=HEIGHT)
     Main.draw_menu()
@@ -130,7 +130,7 @@ def create_Menu_End(WIDTH, HEIGHT, scores, stats):
     Restart = Button("RESTART", round(5.9*WIDTH/8), round(HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), color=(0,255,0), action=button_play)
     Main = Button("MAIN", round(5.9*WIDTH/8), round(4*HEIGHT/6), round(2*WIDTH/8), round(HEIGHT/6), color=(0,0,255), action=button_main)
     buttons = [Restart, Main]
-    LbFrame = Frame("Leaderboard",scores[:5], 10, round(HEIGHT/6), round(2*WIDTH/8), round(4*HEIGHT/6))
+    LbFrame = Frame("Leaderboard",scores, 10, round(HEIGHT/6), round(2*WIDTH/8), round(4*HEIGHT/6))
     StatFrame = Frame("Statistics",stats, round(2*WIDTH/6), round(HEIGHT/2), round(2*WIDTH/6), round(0.95*HEIGHT/2))
     frames = [LbFrame, StatFrame]
     End = Menu("End", buttons=buttons, frames=frames, WIDTH=WIDTH, HEIGHT=HEIGHT)

@@ -4,9 +4,9 @@ from Utils.Graphics import Graphic
 
 
 class Frame:
-    def __init__(self, name : str, scores : list, x1, y1, width, height, score=None):
+    def __init__(self, name : str, loadedlist : list, x1, y1, width, height, score=None):
         self.name = name
-        self.scores = scores
+        self.loadedlist = loadedlist
         self.x1 = x1
         self.y1 = y1
         self.width = width  
@@ -22,9 +22,9 @@ class Frame:
                                                                                                                                           
     def draw_frame(self,caneva):
         font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
-        caneva.draw_rectangle((self.x1, self.y1+round(2*self.height/11)), (self.x2, self.y1+round(2*self.height/11)+round(self.height/11*(len(self.scores)+1))), (200, 200, 200), 3)
-        for i in range(len(self.scores)) :
-            score = self.scores[i]
+        caneva.draw_rectangle((self.x1, self.y1+round(2*self.height/11)), (self.x2, self.y1+round(2*self.height/11)+round(self.height/11*(len(self.loadedlist)+1))), (200, 200, 200), 3)
+        for i in range(len(self.loadedlist)) :
+            score = self.loadedlist[i]
             score_text = str()
             for e in score :
                 score_text += str(e)

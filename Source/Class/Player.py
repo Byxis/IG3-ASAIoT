@@ -11,7 +11,7 @@ class Player:
             the name of the player
         """
         self.name = n
-        self.score = 0.0
+        self.score = 0
         self.lives = 3
         self.leftHand = None
         self.rightHand = None
