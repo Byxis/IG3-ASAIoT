@@ -72,13 +72,13 @@ class Game:
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
-        L = LeaderBoard()
-        S = Stats(self.bins)
+        self.L = LeaderBoard()
+        self.S = Stats(self.bins)
         
         Main, Pause, Play, End = create_Menu_All(
             self.WIDTH, self.HEIGHT,
-            scores = L.loadTenFirst(),
-            stats = S.getAllStats(),
+            scores = self.L.loadTenFirst(),
+            stats = self.S.getAllStats(),
             player_score=0,
             player_lives=3
         )  # Creation of the menus
@@ -200,6 +200,10 @@ class Game:
                 menu.reset_menu()
                 menu.show_score()
                 menu.show_lives()
+            if menu == End:
+                menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
+                menu.frames[1].reset_loadedlist(self.S.getAllStats())
+                menu.reset_menu()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
