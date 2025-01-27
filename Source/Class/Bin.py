@@ -80,7 +80,7 @@ class Bin:
         - bool
             True if the waste is compatible with the bin, False otherwise
         """
-        if type(waste) == ComposedWaste:
+        if type(waste) is ComposedWaste:
             return False
         else :
             return self.type == waste.type
