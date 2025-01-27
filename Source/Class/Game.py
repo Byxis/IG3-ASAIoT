@@ -119,8 +119,8 @@ class Game:
 
             # Display / Render Update
             render.add_layer(indexTrace)
-            output = fps.display(output)
-            output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
+            #output = fps.display(output)
+            #output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
         
             # Affichage du jeu
             cv2.imshow("Jeu", output)
@@ -129,6 +129,7 @@ class Game:
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
+                break
 
             if key == ord("e"):
                 self.gameState = GameState.EndMenu  
@@ -139,6 +140,7 @@ class Game:
             if self.gameState == GameState.Stop:
                 L.addAndSave(self.player.name, self.player.score)
                 break
+                
 
         cv2.destroyAllWindows()
 

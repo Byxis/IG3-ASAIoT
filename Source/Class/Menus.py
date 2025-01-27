@@ -56,7 +56,7 @@ class Menu:
     
     def show_lives(self):
         font_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Fonts', 'Hollster.ttf'))
-        self.caneva.draw_text(text = "Lives : "+str(self.player_lives), position= (10, round(self.HEIGHT/10)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Lives : "+str(self.player_lives)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
+        self.caneva.draw_text(text = "Lives : "+str(self.player_lives), position= (round(self.WIDTH/8), round(self.HEIGHT/20)), font_path = font_path, font_size = round((((self.WIDTH/64*len("Lives : "+str(self.player_lives)))**2+(self.HEIGHT/48)**2)**0.5)/2), color = (255,255,255), center = True)
     
     def change_score(self, player_score):
         self.player_score = player_score
