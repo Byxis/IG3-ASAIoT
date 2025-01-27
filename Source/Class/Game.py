@@ -152,11 +152,10 @@ class Game:
 
             if self.player.lives <= 0:
                 S = Stats(self.bins)
-                End.reset_menu()
                 self.gameState = GameState.EndMenu
                 self.resetAll()
             
-            if self.gameState == GameState.MainMenu:
+            if self.gameState == GameState.MainMenu and not self.isResetted():
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
@@ -194,11 +193,12 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
-            if menu == Play and not self.raspberryApi.isLoaded:
-                menu.change_score(player_score)
+            if menu == Play:
+                if not self.raspberryApi.isLoaded:
+                    menu.change_score(player_score)
+                    menu.show_score()
                 menu.change_lives(player_lives)                
                 menu.reset_menu()
-                menu.show_score()
                 menu.show_lives()
             render.add_layer(menu.show_menu())
 
@@ -325,6 +325,16 @@ class Game:
         }
         self.player.leftHand = None
         self.player.rightHand = None
+    
+    def isResetted(self):
+        """
+        Check if the game is resetted
+
+        Returns:
+        - bool
+            True if the game is resetted, False otherwise
+        """
+        return self.player.score == 0 and self.player.lives == 3 and len(self.activewasteList) == 0 and len(self.wasteList) == 0
 
 if __name__ == "__main__":
     game = Game("Joueur")
