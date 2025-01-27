@@ -151,7 +151,7 @@ class Game:
                 self.gameState = GameState.EndMenu
 
             if self.player.lives <= 0:
-                S = Stats(self.bins)
+                self.S = Stats(self.bins)
                 End.reset_menu()
                 self.gameState = GameState.EndMenu
                 self.resetAll()
@@ -160,7 +160,7 @@ class Game:
                 self.resetAll()
 
             if self.gameState == GameState.Stop:
-                L.addAndSave(self.player.name, self.player.score)
+                self.L.addAndSave(self.player.name, self.player.score)
                 break
                 
 
