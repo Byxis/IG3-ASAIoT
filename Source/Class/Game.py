@@ -101,7 +101,6 @@ class Game:
             if self.gameState == GameState.Playing:
                 # Add bins to screen
                 self.renderBins(render)
-                img = cv2.putText(img, f"Vies : {self.player.lives}", (self.WIDTH - 100, self.HEIGHT - 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                 # Handle waste spawn and collision
                 size = len(wasteList)
                 indexPos = [-100, -100]
