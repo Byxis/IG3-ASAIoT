@@ -126,7 +126,7 @@ class Game:
                 # Handle waste spawn and collision
                 size = len(self.wasteList)
                 indexPos = [-100, -100]
-                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi)
+                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi, self.bins)
                 if size < len(self.wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
