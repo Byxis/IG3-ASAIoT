@@ -1,4 +1,5 @@
 import csv
+import os
 from datetime import datetime
 
 class LeaderBoard:
@@ -6,9 +7,7 @@ class LeaderBoard:
         """
         Create a LeaderBoard instance, load the data from the csv file
         """
-        with open('../Ressources/CSV/scores.csv', mode='r', encoding='utf-8') as file:
-            csv_reader = csv.reader(file)
-            self.data = list(csv_reader)
+        self.scores_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'CSV', 'scores.csv'))
 
     def loadTenFirst(self):
         """
@@ -18,11 +17,13 @@ class LeaderBoard:
         - [str]
             the ten first scores
         """
-        with open('CSV/scores.csv', mode='r', encoding='utf-8') as file:
+        with open(self.scores_path, mode='r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
             lines = list(csv_reader)
-            sorted_lines = sorted(lines[1:], key= lambda x: int(x[2]), reverse=True)
-            firstTen = sorted_lines[:10]
+            sorted_lines = sorted(lines[1:], key= lambda x: x[2], reverse=True)
+            firstTen = sorted_lines[:min(10,len(sorted_lines))]
+            for elt in firstTen:
+                elt[0] = elt[0][0:10]
         return firstTen
         
     def addAndSave(self,  player_name, score):
@@ -35,9 +36,6 @@ class LeaderBoard:
         - score : int
             the score of the player
         """
-        with open('CSV/scores.csv', mode='a', encoding='utf-8') as file:
+        with open(self.scores_path, mode='a', encoding='utf-8', newline='') as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow([datetime.now(), player_name, score])
-        with open('CSVscores.csv', mode='r', encoding='utf-8') as file:
-            csv_reader = csv.reader(file)
-            self.data = list(csv_reader)
+            csv_writer.writerow([datetime.now(), player_name, round(score)])

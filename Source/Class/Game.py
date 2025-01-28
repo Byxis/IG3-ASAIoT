@@ -1,14 +1,20 @@
-from Utils.FPSCounter import FPSCounter
+
 from Enums.GameState import GameState
 from Enums.HandGesture import HandGesture
-from Utils.Graphics import Graphic, SceneRender
 from Enums.Direction import Direction
+from Enums.WasteType import WasteType
+
+from Utils.FPSCounter import FPSCounter
+from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import RaspberryAPI
+
 from Class.Player import Player
 from Class.Menus import *
 from Class.WasteFall import *
-from Enums.WasteType import WasteType
 from Class.Hand import Hand
 from Class.Bin import Bin
+from Class.LeaderBoard import LeaderBoard
+from Class.Stats import Stats
 
 import cv2
 import numpy as np
@@ -18,18 +24,26 @@ from scipy.spatial import distance
 class Game:
     def __init__(self, player):
         self.player = Player(player)
-        self.activeWasteList = []
+        self.activewasteList = []
         self.gameState = GameState.MainMenu
         self.indexPos = []
         self.mouse = [-100, -100]
         self.mouseDelay = 0.5
         self.mouseCurrentDelay = 0
+        self.raspberryApi = RaspberryAPI()
 
     def play(self):
         # Initialisation
         self.EPSILON = 1 # Waiting time for the next frame
         self.WIDTH =  int(480*12/9) # Width of the window
         self.HEIGHT = 480 # height of the window
+
+        if(not self.raspberryApi.isLoaded):
+            answer = input("Do you want to continue with a Raspberry ? If yes, please connect the Raspberry and type the url. If no,type 'enter' : ")
+            if answer != "":
+                self.raspberryApi.actualizeUrl(answer)
+        if(self.raspberryApi.isLoaded):
+            self.raspberryApi.showConnected()
 
         # Creation of the window
         cv2.namedWindow("Jeu", cv2.WINDOW_NORMAL)
@@ -48,6 +62,8 @@ class Game:
         handSolution = mp.solutions.hands # Solution for hand detection
         hands = handSolution.Hands() # Hand detection object
         render = SceneRender((self.WIDTH, self.HEIGHT)) # Render engine
+
+        # Creation of the bins
         self.bins = {
             "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
             "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
@@ -56,7 +72,16 @@ class Game:
             "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
         }
         
-        Main, Pause, Play, End = create_Menu_All(self.WIDTH, self.HEIGHT) # Creation of the menus
+        self.L = LeaderBoard()
+        self.S = Stats(self.bins)
+        
+        Main, Pause, Play, End = create_Menu_All(
+            self.WIDTH, self.HEIGHT,
+            scores = self.L.loadTenFirst(),
+            stats = self.S.getAllStats(),
+            player_score=0,
+            player_lives=3
+        )  # Creation of the menus
 
         # Delay between waste spawn
         wasteDefaultDelay = 2
@@ -64,7 +89,7 @@ class Game:
         
         # Creation of the waste catalog and current waste list
         wasteCatalog = createWasteCatalog()
-        wasteList = []
+        self.wasteList = []
         
         while cap.isOpened():
             # Update image
@@ -93,17 +118,16 @@ class Game:
                     self.indexPos.remove(pos)
             
             # Alls Update
-            self.updateGameState(render, img, Main, Pause, Play, End)
+            self.updateGameState(render, img, Main, Pause, Play, End, self.player.score, self.player.lives)
             fps.update()
             if self.gameState == GameState.Playing:
                 # Add bins to screen
                 self.renderBins(render)
-                
                 # Handle waste spawn and collision
-                size = len(wasteList)
+                size = len(self.wasteList)
                 indexPos = [-100, -100]
-                render = updateAllWaste(render, wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player)
-                if size < len(wasteList):
+                render, self.player.lives = updateAllWaste(render, self.wasteList, self.HEIGHT, self.WIDTH, wasteCatalog, wasteCurrentDelay, self.mouse, self.player, self.raspberryApi, self.bins)
+                if size < len(self.wasteList):
                     wasteCurrentDelay = wasteDefaultDelay
                 if(wasteCurrentDelay >= 0):
                     wasteCurrentDelay -= fps.dt*0.5
@@ -111,8 +135,8 @@ class Game:
 
             # Display / Render Update
             render.add_layer(indexTrace)
-            output = fps.display(output)
-            output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
+            #output = fps.display(output)
+            #output = cv2.resize(output, (self.WIDTH*2, self.HEIGHT*2), interpolation=cv2.INTER_LINEAR)
         
             # Affichage du jeu
             cv2.imshow("Jeu", output)
@@ -121,13 +145,28 @@ class Game:
             key = cv2.waitKey(self.EPSILON) & 0xFF
             if key == ord("q") or key == 27:
                 self.gameState = GameState.Stop
+                break
+
+            if key == ord("e"):
+                self.gameState = GameState.EndMenu
+
+            if self.player.lives <= 0:
+                self.S = Stats(self.bins)
+                self.L.addAndSave(self.player.name, self.player.score)
+                End.reset_menu()
+                self.gameState = GameState.EndMenu
+                self.resetAll()
             
+            if self.gameState == GameState.MainMenu and not self.isResetted():
+                self.resetAll()
+
             if self.gameState == GameState.Stop:
                 break
+                
 
         cv2.destroyAllWindows()
 
-    def updateGameState(self, render, img, Main, Pause, Play, End):
+    def updateGameState(self, render, img, Main, Pause, Play, End, player_score = 0, player_lives = 0):
         """
         Update the game state and the menus
 
@@ -155,11 +194,25 @@ class Game:
         menu = menu_map.get(self.gameState, None)
         if menu:
             render.add_layer(img)
+            if menu == Play:            
+                menu.reset_menu()
+                if not self.raspberryApi.isLoaded:
+                    menu.change_score(player_score)
+                    menu.show_score()
+                menu.change_lives(player_lives)    
+                menu.show_lives()
+            if menu == End:
+                menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
+                menu.frames[1].reset_loadedlist(self.S.getAllStats())
+                menu.reset_menu()
+            if menu == Main:
+                menu.frames[0].reset_loadedlist(self.L.loadTenFirst())
+                menu.reset_menu()
             render.add_layer(menu.show_menu())
 
             for bu in menu.buttons:
-                    if bu.isClicked(self.mouse[0], self.mouse[1]):
-                        self.gameState = bu.click()
+                if bu.isClicked(self.mouse[0], self.mouse[1]):
+                    self.gameState = bu.click()
 
     def renderBins(self, render):
         """
@@ -186,6 +239,7 @@ class Game:
         """
         recHands = hands.process(img)
         if recHands.multi_hand_landmarks:
+            hand_positions = []
             for hand in recHands.multi_hand_landmarks:
                 handArticulations = []
                 # Get all the articulations of the hand
@@ -194,7 +248,23 @@ class Game:
                     x, y = int(point.x * w), int(point.y * h)
                     handArticulations.append([x, y])
                 # Create a hand object
-                hand = Hand(handArticulations)
+                hand_obj = Hand(handArticulations)
+                hand_positions.append(hand_obj)
+
+            # Filter out hands that are too close to each other
+            filtered_hands = []
+            for i, hand1 in enumerate(hand_positions):
+                too_close = False
+                for j, hand2 in enumerate(hand_positions):
+                    if i != j:
+                        distance = np.linalg.norm(np.array(hand1.pos) - np.array(hand2.pos))
+                        if distance < 50:  # Threshold distance
+                            too_close = True
+                            break
+                if not too_close:
+                    filtered_hands.append(hand1)
+
+            for hand in filtered_hands:
                 gesture = hand.getHandGesture()
                 x, y = hand.pos
 
@@ -210,8 +280,19 @@ class Game:
                     self.player.changeBin(hand.getHandDirection(), None)
 
                 # Temp: Display the gesture on the screen
-                cv2.putText(img, f"{gesture.name} ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
-                
+
+                match gesture:
+                    case HandGesture.INDEX_RAISED:
+                        cv2.putText(img, f"Slicing", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2, cv2.LINE_AA)
+                    case HandGesture.FIST_CLOSED:
+                        cv2.putText(img, f"Compost", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 51, 102), 2, cv2.LINE_AA)
+                    case HandGesture.HAND_OPEN:
+                        cv2.putText(img, f"Glass", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 204, 0), 2, cv2.LINE_AA)
+                    case HandGesture.OK_SIGN:
+                        cv2.putText(img, f"Non Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 50, 50), 2, cv2.LINE_AA)
+                    case HandGesture.ROCK_N_ROLL:
+                        cv2.putText(img, f"Recycling", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2, cv2.LINE_AA)
+
                 # Creating the index trace and the mouse
                 if gesture == HandGesture.INDEX_RAISED:
                     self.indexPos.append([hand.index[3][0], hand.index[3][1], 1])
@@ -234,6 +315,34 @@ class Game:
             HandGesture.NONE: None
         }
         return self.bins.get(bin_map.get(gesture, None), None)
+
+    def resetAll(self):
+        """
+        Reset all the game variables
+        """
+        self.player.score = 0
+        self.player.lives = 3
+        self.activewasteList = []
+        self.wasteList = []
+        self.bins = {
+            "Recycling": Bin("Recycling",  WasteType.Recycling, self.HEIGHT),
+            "Compost": Bin("Compost", WasteType.Compost, self.HEIGHT),
+            "Glass": Bin("Glass", WasteType.Glass, self.HEIGHT),
+            "Non Recycling": Bin("Non Recycling", WasteType.NonRecycling, self.HEIGHT),
+            "Floor" : Bin("Floor", WasteType.Floor, self.HEIGHT)
+        }
+        self.player.leftHand = None
+        self.player.rightHand = None
+    
+    def isResetted(self):
+        """
+        Check if the game is resetted
+
+        Returns:
+        - bool
+            True if the game is resetted, False otherwise
+        """
+        return self.player.score == 0 and self.player.lives == 3 and len(self.activewasteList) == 0 and len(self.wasteList) == 0
 
 if __name__ == "__main__":
     game = Game("Joueur")

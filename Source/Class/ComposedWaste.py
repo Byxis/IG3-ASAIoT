@@ -1,10 +1,11 @@
 from Utils.Graphics import Graphic
 
 import cv2
+import os
 
 class ComposedWaste:
 
-    def __init__(self, _name: str, _components, _speed, _sprite_path, size=75):
+    def __init__(self, _name: str, _components, _speed, _sprite_path, _score, size=75):
         """
         Create a ComposedWaste instance
 
@@ -21,14 +22,24 @@ class ComposedWaste:
             the size of the waste
         """
         self.components = _components
-        self.name = _name
-        self.sprite = Graphic(cv2.imread(_sprite_path, cv2.IMREAD_UNCHANGED))
+        self.name = _name 
+        self.sprite_path = os.path.abspath(os.path.join(os.path.dirname(__file__), _sprite_path))
+        
+        if self.sprite_path is None or not os.path.exists(self.sprite_path):
+            raise FileNotFoundError(f"Image for composed waste not found at path: {self.sprite_path}")
+        
+        sprite = cv2.imread(self.sprite_path, cv2.IMREAD_UNCHANGED)
+        if sprite is None:
+            raise FileNotFoundError(f"Failed to load image for composed waste from path: {self.sprite_path}")
+        
+        self.sprite = Graphic(sprite)
         self.sprite.resize((size, size), cv2.INTER_NEAREST)
-        self.sprite_path = _sprite_path
+        
         self.radius = size/2
         self.speed = _speed
         self.isSliced = False
         self.position = [0, 0]
+        self.score = _score
 
     def slice(self):
         """

@@ -1,12 +1,18 @@
+import subprocess
 from Enums.WasteType import WasteType
+
 from Utils.FPSCounter import FPSCounter
 from Utils.Graphics import Graphic, SceneRender
+from Utils.API_Raspberry import *
+
 from Class.ComposedWaste import ComposedWaste
 from Class.Waste import Waste
 
 from random import randint
 from copy import copy
 import csv
+import os
+import asyncio
 
 def getRandomPosition(WIDTH, wasteList):
     """
@@ -94,7 +100,7 @@ def checkCollision(x, y, waste):
     - bool
         True if the point is colliding with the waste, False otherwise
     """
-    if waste.position[0] <= x <= waste.position[0] + waste.radius*2 and waste.position[1] <= y <= waste.position[1] + waste.radius*2:
+    if waste.position[0] - waste.radius <= x <= waste.position[0] + waste.radius and waste.position[1] - waste.radius <= y <= waste.position[1] + waste.radius:
         return True
     return False
 
@@ -123,7 +129,7 @@ def createWastesFromSlice(WIDTH, wasteList, compWaste, wasteCatalog):
                 wasteList.append(waste)
                 break
 
-def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player):
+def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentDelay, indexPos, player, raspberryApi, bins):
     """
     Update all the wastes in the list, and handle the collision with the hands
 
@@ -159,41 +165,62 @@ def updateAllWaste(render, wasteList, HEIGHT, WIDTH, wasteCatalog, wasteCurrentD
         w.update()
         # Remove the waste if it's out of the screen
         if w.position[1] > HEIGHT - w.radius:
+            remScore(player, w, raspberryApi)
             wasteList.remove(w)
             player.score -= 1
-            print("Score : ", player.score)
+            player.lives -= 1
+            bins["Floor"].addWasteToBin(w)
         if type(w) == Waste:
             if player.leftHand != None:
                 # Check if the waste is compatible with the hand, and if the hand is close enough to the waste
                 if player.leftHand.isCompatible(w) and (player.leftHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
                     w.update()
+                    w.update()
+                    w.update()
+                    w.update()
 
                 if checkCollision(player.leftHand.pos[0], player.leftHand.pos[1], w) and w in wasteList:
-                    if(player.rightHand.isCompatible(w)):
-                        player.score += 1
+                    if(player.leftHand.isCompatible(w)):
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
-                    print("Score : ", player.score)
+                        remScore(player, w, raspberryApi)
+                        player.lives -= 1
                     wasteList.remove(w)
+                    player.leftHand.addWasteToBin(w)
             
             if player.rightHand != None:
                 if player.rightHand.isCompatible(w) and (player.rightHand.pos[0] - w.position[0])**2  <= 30**2 :
                     #Boost speed
                     w.update()
+                    w.update()
+                    w.update()
+                    w.update()
 
                 if checkCollision(player.rightHand.pos[0], player.rightHand.pos[1], w) and w in wasteList:
                     if(player.rightHand.isCompatible(w)):
-                        player.score += 1
+                        addScore(player, w, raspberryApi)
                     else:
-                        player.score -= 1
-                    print("Score : ", player.score)
+                        remScore(player, w, raspberryApi)
+                        player.lives -= 1
                     wasteList.remove(w)
+                    player.rightHand.addWasteToBin(w)
         if type(w) == ComposedWaste:
             # Check if the hand is colliding with the waste
             if checkCollision(indexPos[0], indexPos[1], w):
+                addScore(player, w, raspberryApi)
                 createWastesFromSlice(WIDTH, wasteList, w, wasteCatalog)
-    return render
+    return render, player.lives
+
+def addScore(player, waste, raspberryApi):
+    player.score += waste.score
+    if raspberryApi.isLoaded:
+        raspberryApi.publishAddScore(player.score, waste.score)
+
+def remScore(player, waste, raspberryApi):
+    player.score -= waste.score // 2
+    if raspberryApi.isLoaded:
+        raspberryApi.publishRemScore(player.score, waste.score)
 
 def createWasteCatalog():
     """
@@ -203,19 +230,19 @@ def createWasteCatalog():
     - [Waste]
         the list of all the possible wastes
     """
-    with open('../Ressources/CSV/wastes.csv', mode='r', encoding='utf-8') as file:
-        csv_reader = csv.reader(file)
+    csv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'CSV', 'wastes.csv'))
+        
+    with open(csv_path, mode='r', encoding='utf-8') as file:
+        csv_reader = csv.reader(file, delimiter=';')
         l = list(csv_reader)
         wasteCatalog = []
         for line in l[1:]:
             if(len(line) > 0):
                 if line[5] == 'None':
-                    print(line[1])
-                    print(WasteType[line[1]])
-                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2]))
+                    wasteCatalog.append(Waste(line[0], WasteType[line[1]], line[4], line[2], float(line[3])))
                 else:
                     if line[7] != 'None':     
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6], line[7]], line[4], line[2], float(line[3])))
                     elif line[7] == 'None' and line[6] != 'None':
-                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2]))
+                        wasteCatalog.append(ComposedWaste(line[0], [line[5], line[6]], line[4], line[2], float(line[3])))
     return wasteCatalog

@@ -32,7 +32,7 @@ class Stats:
                 countW += 1
             elif type(waste) == ComposedWaste:
                 countCW += 1
-        return countW, countCW
+        return countW + countCW
     
     def getCorrectWasteNumberForEachBin(self):
         stat_dic = {}
@@ -68,16 +68,16 @@ class Stats:
 
     def WrongSortingPercentage(self):
         total_waste = self.getTotalWasteInBins()
-        total_wrong = self.getTotalWrongSortingNumber()
+        total_wrong = total_waste - self.getTotalCorrectSortingNumber()
         if total_waste == 0:
             return 0
         else:
             return total_wrong/total_waste * 100
 
-bins = {
-    "Recycling": Bin("Recycling", WasteType.Recycling, 480),
-    "Compost": Bin("Compost", WasteType.Compost, 480),
-    "Glass": Bin("Glass", WasteType.Glass, 480),
-    "Default": Bin("Default", WasteType.NonRecycling, 480),
-    "Floor": Bin("Floor", WasteType.Floor, 480)
-}
+    def getAllStats(self):
+        return [
+            ["Dechets bien tries :", self.getTotalCorrectSortingNumber()],
+            ["Pourcentage de dechets bien tries :", self.getCorrectSortingPercentage()],
+            ["Pourcentage de dechets non tries :", self.WrongSortingPercentage()],
+            ["Nombre total de dechets :", self.getTotalWasteInBins()]        
+        ]

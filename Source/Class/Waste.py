@@ -2,9 +2,10 @@ import Enums.WasteType as WasteType
 from Utils.Graphics import Graphic
 
 import cv2
+import os
 
 class Waste:
-    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, size=75):
+    def __init__(self, _name: str,_type: WasteType, _speed: float, _sprite_path: str, _score: int, size=75):
         """
         Create a Waste instance
 
@@ -24,10 +25,19 @@ class Waste:
         self.type = _type
         self.speed = _speed
         self.position = [0, 0]
-        self.sprite = Graphic(cv2.imread(""+_sprite_path, cv2.IMREAD_UNCHANGED))
-        self.sprite_path = _sprite_path
+        self.sprite_path = os.path.abspath(os.path.join(os.path.dirname(__file__), _sprite_path))
+             
+        if self.sprite_path is None or not os.path.exists(self.sprite_path):
+            raise FileNotFoundError(f"Image for bin type {_type} not found at path: {self.sprite_path}")
+        
+        self.sprite = cv2.imread(self.sprite_path, cv2.IMREAD_UNCHANGED)
+        if self.sprite is None:
+            raise FileNotFoundError(f"Failed to load image for bin type {_type} from path: {self.sprite_path}")
+              
+        self.sprite = Graphic(self.sprite)
         self.sprite.resize((size, size), cv2.INTER_NEAREST)
         self.radius = size/2
+        self.score = _score
     
     def update(self):
         """

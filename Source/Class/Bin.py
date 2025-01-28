@@ -21,20 +21,31 @@ class Bin:
         self.name = _name
         self.type = _type
         self.content = []
-        sprite = Graphic()
+        sprite_path = None
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Ressources', 'Textures', 'Bins'))
+        
         if _type == WasteType.Recycling:
-            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/recycling.png", cv2.IMREAD_UNCHANGED))
+            sprite_path = os.path.join(base_path, 'recycling.png')
         elif _type == WasteType.Glass:
-            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/glass.png", cv2.IMREAD_UNCHANGED))
+            sprite_path = os.path.join(base_path, 'glass.png')
         elif _type == WasteType.NonRecycling:
-            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/default.png", cv2.IMREAD_UNCHANGED))
+            sprite_path = os.path.join(base_path, 'default.png')
         elif _type == WasteType.Compost:
-            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/compost.png", cv2.IMREAD_UNCHANGED))
+            sprite_path = os.path.join(base_path, 'compost.png')
         elif _type == WasteType.Floor:
-            sprite = Graphic(cv2.imread("../Ressources/Textures/Bins/default.png", cv2.IMREAD_UNCHANGED))
+            sprite_path = os.path.join(base_path, 'default.png')
+                
+        if sprite_path is None or not os.path.exists(sprite_path):
+            raise FileNotFoundError(f"Image for bin type {_type} not found at path: {sprite_path}")
+        
+        sprite = cv2.imread(sprite_path, cv2.IMREAD_UNCHANGED)
+        if sprite is None:
+            raise FileNotFoundError(f"Failed to load image for bin type {_type} from path: {sprite_path}")
+        
+        graphic_sprite = Graphic(sprite)
         size = 1
-        self.sprite = sprite.resize((50*size, 75*size), interpolation=cv2.INTER_AREA)
-        self.pos = [0,_height-50]
+        self.sprite = graphic_sprite.resize((50 * size, 75 * size), interpolation=cv2.INTER_AREA)
+        self.pos = [0, _height - 50]
     
     def updatePos(self, pos):
         """
@@ -55,7 +66,7 @@ class Bin:
         - waste : Waste
             the waste to add to the bin
         """
-        self.content.put(waste)
+        self.content.append(waste)
     
     def isCompatible(self, waste):
         """
@@ -69,7 +80,7 @@ class Bin:
         - bool
             True if the waste is compatible with the bin, False otherwise
         """
-        if type(waste) == ComposedWaste:
+        if type(waste) is ComposedWaste:
             return False
         else :
             return self.type == waste.type
